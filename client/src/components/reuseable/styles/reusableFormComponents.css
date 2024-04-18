@@ -82,7 +82,6 @@
 
 .reusableH3 {
     background: rgba(255, 255, 255, 0.2); /* Leichte Transparenz */
-    backdrop-filter: blur(10px); /* Hintergrundunschärfe für den Glaseffekt */
     border-radius: 10px; /* Abgerundete Ecken */
     border: 1px solid rgba(255, 255, 255, 0.3); /* Leicht sichtbare Grenze */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtiler Schatten */

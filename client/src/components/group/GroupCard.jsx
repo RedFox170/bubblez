@@ -92,10 +92,7 @@ const GroupCard = ({ group }) => {
   };
 
   return (
-    <li
-      key={title}
-      className="reusableBorder reusableBlur mt-4 p-2 flex flex-col w-full"
-    >
+    <li key={title} className="reusableBorder  mt-4 p-2 flex flex-col w-full">
       <div onClick={updateGroupId} className=" flex w-full">
         {/* Linke Seite */}
         <div className="flex-none w-1/4 mr-4">

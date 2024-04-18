@@ -111,13 +111,6 @@ const GroupOverview = () => {
 
   return (
     <section className="relative min-h-screen overflow-hidden flex justify-center items-center">
-      {/* Fest positionierter Hintergrund */}
-      {/* <div className="absolute inset-0">
-        <div className="fixed reusableGlobalBackground "></div>
-        <div className="fixed reusableGlobalBackground "></div>
-        <div className=" fixed reusableGlobalBackground "></div>
-      </div> */}
-
       {/* Scrollbarer Inhalts-Container */}
       <div className="w-full h-full overflow-auto ">
         <div className="reusableContainer mx-auto flex flex-col items-center">
