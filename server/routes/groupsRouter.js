@@ -12,6 +12,8 @@ import {
   deleteGroup,
   getSearchGroups,
   createGroupPost,
+  toggleLikePost,
+  createGroupPostComment,
 } from "../controller/groupsController.js";
 
 const groupsRouter = express.Router();
@@ -26,5 +28,12 @@ groupsRouter.post("/followGroup/:id", authorizeUser, followGroup);
 groupsRouter.patch("/editGroup/:id", authorizeUser, editGroup);
 groupsRouter.delete("/unfollowGroup/:id", authorizeUser, unfollowGroup);
 groupsRouter.delete("/deleteGroup/:id", authorizeUser, deleteGroup);
+// PUT Route zum Toggle des Like-Status eines Posts
+groupsRouter.put("/likePost/:groupId/:postId", authorizeUser, toggleLikePost);
+groupsRouter.post(
+  "/addComment/:groupId/:postId",
+  authorizeUser,
+  createGroupPostComment
+);
 
 export default groupsRouter;

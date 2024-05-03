@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Carousel from "../landingpage/Carousel.jsx";
 import "./DashboardStyle.css";
-import Logo from "../assets/SupportStreetLogo.png";
+import Logo from "../assets/bubble_icon.png";
 
 const Dashboard = () => {
   return (
@@ -17,7 +17,7 @@ const Dashboard = () => {
             style={{ "--i": 5 }}
           >
             <div className="square-link text-center font-bold">
-              Meine Gruppen
+              Meine Bubblez
             </div>
           </Link>
           <Link
@@ -55,11 +55,11 @@ const Dashboard = () => {
         </div>
 
         <div className="container mt-64">
-          <div className="form">
-            <h2 className="text-3xl font-bold mb-4  text-gray-800">
-              Herzlich Willkommen bei Support Street!
+          <div className="form flex flex-col items-center justify-center h-full">
+            <h2 className="text-3xl font-bold mb-4 text-gray-800 text-center">
+              Herzlich Willkommen bei Bubblez!
             </h2>
-            <img src={Logo} alt="logo" />
+            <img src={Logo} className="h-40 self-center" alt="logo" />
           </div>
         </div>
       </section>

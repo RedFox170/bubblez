@@ -18,7 +18,7 @@ const GroupOverview = () => {
   const [dropDFilterIsOpen, setDropDFilterIsOpen] = useState(false);
   const [selectedTag, setSelectedTag] = useState("");
 
-  console.log("Userdata Groups in overwiev:", userData.groups);
+  // console.log("Userdata Groups in overwiev:", userData.groups);
 
   /******************************************************
    *    Groupsfetch und daten in den Context laden

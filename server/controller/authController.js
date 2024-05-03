@@ -42,11 +42,13 @@ export const authorizeUser = (req, res, next) => {
   const token = req.cookies.token;
 
   // 2. Wenn es keinen token gibt, senden wir einen fehler zurück
-  if (!token) return res.send("no cookie found. you are not authorized.");
+  if (!token)
+    return res.status(401).send("No token found. You are not authorized.");
   // 3. wenn es einen token gibt, versuchen wir ihn zu verifizieren
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     // 4. bei einem fehler, senden wir einen error zurück
-    if (err) return res.send("falscher token");
+    if (err) return res.status(401).send("Invalid token");
+    console.log("Decoded user:", user);
     // wir wollen den user in der nächsten middleware verwenden.
     req.user = user;
     // console.log("req.user authController", user);

@@ -9,6 +9,7 @@ import newsRouter from "./routes/newsRouter.js";
 import groupsRouter from "./routes/groupsRouter.js";
 import marketRouter from "./routes/marketRouter.js";
 import dotenv from "dotenv";
+import usersRouter from "./routes/usersRouter.js";
 
 //import userRouter from "./routes/user.js";
 dotenv.config();
@@ -53,6 +54,7 @@ app.use("/", userRouter);
 app.use("/", newsRouter);
 app.use("/", groupsRouter);
 app.use("/", marketRouter);
+app.use("/", usersRouter);
 
 /******************************************************
  *   Server starten

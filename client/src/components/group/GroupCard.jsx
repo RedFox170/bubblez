@@ -77,7 +77,7 @@ const GroupCard = ({ group }) => {
           credentials: "include",
         }
       );
-
+      console.log("joinGroupBtnHandler groupId", groupId);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message);

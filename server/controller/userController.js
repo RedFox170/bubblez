@@ -9,17 +9,8 @@ import jwt from "jsonwebtoken";
 
 export const registerController = async (req, res) => {
   try {
-    const {
-      email,
-      password,
-      confirmPassword,
-      firstName,
-      lastName,
-      address,
-      geoCode,
-      followUsers,
-      groups,
-    } = req.body;
+    const { email, password, confirmPassword, userName, followUsers, groups } =
+      req.body;
 
     // Überprüfen, ob die E-Mail bereits existiert
     const existingUser = await UserModell.findOne({ email });
@@ -40,11 +31,8 @@ export const registerController = async (req, res) => {
     // Benutzer erstellen und in die Datenbank speichern
     const newUser = await UserModell.create({
       email,
-      firstName,
-      lastName,
+      userName,
       password: hashedPassword,
-      address,
-      geoCode,
       followUsers,
       groups,
     });
@@ -148,7 +136,6 @@ export const editUser = async (req, res, next) => {
     const userId = req.params.id;
     // console.log("body:", req.body);
     const options = { new: true };
-
 
     const user = await UserModell.findByIdAndUpdate(
       userId,

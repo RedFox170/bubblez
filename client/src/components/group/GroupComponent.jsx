@@ -12,14 +12,13 @@ import Avatar from "../../../public/avatar-placeholder.png";
 const GroupComponent = () => {
   const { groupId } = useParams();
   const [showDetails, setShowDetails] = useState(false);
-  const { groupsData, isLoading } = useContext(GroupsContext);
-  // const [isLoading, setIsLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log(groupsData);
+  const { groupsData, isLoading } = useContext(GroupsContext);
 
   // Die Logik zum Finden deiner Gruppe basierend auf `groupId`
   const group = groupsData.find((group) => group._id === groupId);
-  console.log("group in GroupComponent", group);
+  // console.log("group in GroupComponent", group);
   const [groupPosts, setGroupPosts] = useState([]);
 
   useEffect(() => {
@@ -58,7 +57,6 @@ const GroupComponent = () => {
   const {
     /* title, text, admins, mods, members, privateGroup, comments,  */ image,
   } = group;
-  console.log("group in Component", group);
 
   /******************************************************
    *    img
@@ -77,6 +75,15 @@ const GroupComponent = () => {
    ******************************************************/
   const detailsHandler = () => {
     setShowDetails(!showDetails);
+  };
+
+  /******************************************************
+   *    Menü ein und ausblenden
+   ******************************************************/
+
+  const menüHandler = () => {
+    setMenuOpen(!menuOpen);
+    console.log("menuOpen", menuOpen);
   };
 
   /******************************************************
@@ -132,6 +139,37 @@ const GroupComponent = () => {
     }
   };
 
+  /******************************************************
+   *    Gruppe verlassen
+   ******************************************************/
+  const leaveGroup = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5500/unfollowGroup/${groupId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("response", response, groupId);
+      if (response.ok) {
+        alert("Du hast die Gruppe erfolgreich verlassen.");
+        // Logik um die Ansicht zu aktualisieren oder den Nutzer umzuleiten
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message);
+      }
+    } catch (error) {
+      console.error("Fehler beim Verlassen der Gruppe:", error);
+      alert(
+        "Ein Fehler ist aufgetreten beim Versuch, die Gruppe zu verlassen."
+      );
+    }
+  };
+
   return (
     <section className="relative flex flex-col min-h-screen  ">
       {/* Fest positionierter Hintergrund */}
@@ -175,7 +213,12 @@ const GroupComponent = () => {
               >
                 {!showDetails ? "Details einblenden" : "Details ausblenden"}
               </button>
-              <button className="reusableFormBtn h-10 ml-3">Menü</button>
+              <button
+                onClick={menüHandler}
+                className="reusableFormBtn h-10 ml-3"
+              >
+                {!menuOpen ? "Menü öffnen" : "Menü schließen"}
+              </button>
             </div>
 
             {showDetails && (
@@ -202,6 +245,33 @@ const GroupComponent = () => {
                 )}
               </div>
             )}
+
+            {menuOpen && (
+              <div className="space-y-2">
+                <p className="bg-white bg-opacity-50 text-center  p-4 rounded-lg shadow-lg">
+                  Gruppen Einstellungen
+                </p>
+
+                <div className="space-y-4 mt-4">
+                  <button className="reusableFormBtn h-10 mr-3">
+                    Einladen {/* Wenn SocketIo angeschlossen ist */}
+                  </button>
+                  <button className="reusableFormBtn h-10 mr-3">
+                    Inhalt melden{/* Wenn SocketIo angeschlossen ist */}
+                  </button>
+                  <button
+                    onClick={leaveGroup}
+                    className="reusableFormBtn h-10 mr-3"
+                  >
+                    Gruppe verlassen
+                  </button>
+                  <button className="reusableFormBtn h-10 mr-3">
+                    Admin zugang
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Tags und Privatsphäre-Status */}
             <div className="p-2 flex justify-between">
               <span>{isPrivate()}</span>

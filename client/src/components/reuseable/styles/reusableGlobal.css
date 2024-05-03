@@ -13,6 +13,8 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     padding: 20px; 
     height: 100%;
+    max-width: 90%; /* Oder eine andere geeignete Breite */
+  margin: 0 auto; /* Zentriert den Container horizontal */
 }
 
 .reusableBorder {
@@ -96,19 +98,22 @@ section .reusableGlobalBackground2:nth-child(3) {
 }
 
 
-    /* --------------  Animated Squares  ------------------ */
 
 
-    .reusableSquare {
+    /* --------------  Animated Bubble  ------------------ */
+
+
+    .reusableBubble {
         backdrop-filter: blur(5px);
-        box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.5);
         border-right: 1px solid rgba(255, 255, 255, 0.2);
         border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%; /* Änderung: 50% für runde Form */
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 10%, rgba(255, 255, 255, 0) 60%);
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         animation: animate 10s linear infinite;
         animation-delay: calc(-1s * var(--i));
+        transform-origin: center center;
     }
     
     @keyframes animate {
@@ -119,59 +124,54 @@ section .reusableGlobalBackground2:nth-child(3) {
             transform: translateY(40px);
         }
     }
+
+    /* Media Query für Bildschirmbreiten ab 700px */
+@media (max-width: 700px) {
+    .reusableBubble {
+      display: none;
+    }
+  }
     
-    .reusableSquare:nth-child(1) {
-        top: -180px;
-        right: -100px;
+    .reusableBubble:nth-child(1) {
+        top: 500px;
+        right: 500px;
         width: 250px;
         height: 250px;
+        z-index: 2;
+        
     }
     
-    .reusableSquare:nth-child(2) {
-        top: 150px;
-        left: -100px;
+    .reusableBubble:nth-child(2) {
+        top: 0px;
+        left: 0px;
         width: 120px;
         height: 120px;
         z-index: 2;
     }
     
-    .reusableSquare:nth-child(3) {
-        top: 250px;
-        right: -220px;
+    .reusableBubble:nth-child(3) {
+        top: 0px;
+        right: 0px;
         width: 180px;
         height: 180px;
         z-index: 2;
     }
     
-    .reusableSquare:nth-child(4) {
-        bottom: -130px;
-        right: 330px;
+    .reusableBubble:nth-child(4) {
+        bottom: 0px;
+        right: 0px;
         width: 150px;
         height: 150px;
+        z-index: 2;
+    }
+    .reusableBubble:nth-child(5) {
+        bottom: 0px;
+        right: 0px;
+        width: 150px;
+        height: 150px;
+        z-index: 2;
     }
 
-  /* Test Codes  */
-
-    .reusableBubble {
-        background: radial-gradient(circle, #ffffffdf 10%, rgba(255, 255, 255, 0) 60%);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        border-radius: 50%; 
-        animation: animate 10s linear infinite;
-        animation-delay: calc(-1s * var(--i));
-    }
-    
-    @keyframes animate {
-        0%, 100% {
-            transform: translateY(-40px);
-        }
-        50% {
-            transform: translateY(40px);
-        }
-    }
-    
-  
-    
-    
 
   /* --------------  BARHEADERS (Gruppen erstellen, Suchen Sortieren Filter BOX)  ------------------ */
 /* --------------  bar für Groups und Market  ------------------ */

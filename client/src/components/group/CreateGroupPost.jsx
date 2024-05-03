@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import "../reuseable/styles/reusableFormComponents.css";
 import "../reuseable/styles/reusableGlobal.css";
 
+//! Komponente wird nicht verwendet! mainComponents - createPost-Components!!!
 /* const CreateGroupPost = ({ closeModal, groupPosts, setGroupPosts }) => {
   const { groupId } = useParams();
   console.log(groupId);

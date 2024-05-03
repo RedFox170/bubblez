@@ -32,8 +32,8 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
    * und überprüfung der Länge des Betreffs und der Nachricht
    ******************************************************/
 
-  const validateAndSubmitForm = async (e) => {
-    e.preventDefault(); // Verhindert das Standardverhalten des Formulars
+  const validateAndSubmitForm = async (prevPosts) => {
+    prevPosts.preventDefault(); // Verhindert das Standardverhalten des Formulars
 
     // Validierung für 'betreff'
     if (title.length < 2 || title.length > 50) {
@@ -74,16 +74,20 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
       console.log(response);
 
       if (response.ok) {
-        console.log("Post erfolgreich gespeichert");
-        // Weiterer Code nach erfolgreicher Speicherung (z.B. Benutzer benachrichtigen, Formular zurücksetzen)
+        const data = await response.json();
         closeModal(); // Schließt das Formular/Modal nach dem erfolgreichen Absenden
+        if (data.post && data.post._id) {
+          // Stelle sicher, dass die Post-ID vorhanden ist
+          setGroupPosts((prevPosts) => [...prevPosts, data.post]);
+          localStorage.setItem(
+            "groupsData",
+            JSON.stringify([...prevPosts, data.post])
+          ); // Aktualisiere den localStorage korrekt
+        }
       } else {
         console.error("Fehler beim Speichern des Posts");
         setErrorMessage("Es gab ein Problem beim Speichern Ihres Posts.");
       }
-      const data = await response.json();
-      setGroupPosts([...groupPosts, data.post]);
-      console.log("data.post: ", data.post);
     } catch (error) {
       console.error("Fehler beim Senden der Daten", error);
       setErrorMessage("Es gab ein Problem beim Senden Ihrer Daten.");

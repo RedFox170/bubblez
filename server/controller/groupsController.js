@@ -318,6 +318,8 @@ export const unfollowGroup = async (req, res) => {
       members: userId,
     });
 
+    console.log("group in unfollowGroup Controller", group);
+
     if (!group) {
       return res
         .status(400)
@@ -349,9 +351,9 @@ export const unfollowGroup = async (req, res) => {
 //! Checken ob der GroupsRouter createGroupPost richtig angeschlossen ist
 
 export const createGroupPost = async (req, res, next) => {
-  const groupId = req.params.id; // Stelle sicher, dass du groupId in der Route definiert hast
-  console.log(groupId);
-  const { title, text, topic, image } = req.body; // Annahme, dass diese Daten vom Client kommen
+  const groupId = req.params.id;
+
+  const { title, text, topic, image } = req.body;
   console.log(req.body);
   try {
     // Authentifizierung und Autorisierung (wie bereits in deinem Code)
@@ -388,13 +390,124 @@ export const createGroupPost = async (req, res, next) => {
     group.groupPosts.push(newPost);
     await group.save();
 
-    // Sende eine Erfolgsantwort zurück
-    res
-      .status(201)
-      .send({ message: "Beitrag erfolgreich erstellt.", post: newPost });
+    // Sende eine Erfolgsantwort zurück mit dem gespeicherten Post-Objekt
+    const savedGroup = await group.save();
+    const savedPost = savedGroup.groupPosts[savedGroup.groupPosts.length - 1]; // Der zuletzt hinzugefügte Post
+    console.log("savedPost", savedPost);
+
+    const newPostId = savedPost._id;
+    console.log("newPostId", newPostId);
+
+    // Extrahiere die ID des neu erstellten Posts
+    /*   const newPostId = group.groupPosts[group.groupPosts.length - 1]._id; */
+
+    res.status(201).send({
+      message: "Beitrag erfolgreich erstellt.",
+      post: savedPost,
+      postId: newPostId,
+    });
   } catch (error) {
     next(error);
   }
+};
+
+/******************************************************
+ *   toggleLikePost (GruppenPosts liken)
+ ******************************************************/
+
+export const toggleLikePost = async (req, res) => {
+  const { groupId, postId } = req.params;
+  const userId = req.user.user._id.toString();
+  // console.log("toggleLikePost Controller: ", groupId, postId, userId);
+
+  try {
+    // Zuerst das Dokument finden, um den aktuellen Like-Status zu prüfen
+    const group = await GroupsModel.findById(groupId);
+    if (!group) {
+      return res.status(404).send("Group not found");
+    }
+
+    const post = group.groupPosts.id(postId);
+    // console.log("post", post);
+    if (!post) {
+      return res.status(404).send("Post not found");
+    }
+
+    // Prüfen, ob der User den Post bereits geliked hat
+    const likeIndex = post.likes.map((id) => id.toString()).indexOf(userId);
+    // console.log("likeIndex", likeIndex);
+
+    // Entsprechend hinzufügen oder entfernen
+    const update =
+      likeIndex === -1
+        ? { $addToSet: { "groupPosts.$[elem].likes": userId } } // Füge hinzu
+        : { $pull: { "groupPosts.$[elem].likes": userId } }; // Entferne
+    //console.log("update", update);
+    // console.log("postId", postId);
+    // Das Dokument mit der entsprechenden Operation aktualisieren
+    const updatedGroup = await GroupsModel.findByIdAndUpdate(groupId, update, {
+      new: true,
+      arrayFilters: [{ "elem._id": postId }],
+    });
+
+    if (!updatedGroup) {
+      return res.status(404).send("Update failed");
+    }
+    console.log("Updated Post:", post); // Nach dem Update
+    res.json(post);
+  } catch (error) {
+    console.error("Failed to toggle like:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+/******************************************************
+ *   addCommentToPost  (Antworten auf Kommentare)
+ ******************************************************/
+export const createGroupPostComment = async (req, res) => {
+  const { groupId, postId } = req.params;
+  const { commentText } = req.body; // Der Text des Kommentars aus dem Request
+  const userId = req.user.user._id.toString(); // Der Benutzer, der den Kommentar erstellt
+  console.log("createGroupPostComment Controller:", groupId, postId, userId);
+
+  try {
+    // Zuerst das Gruppendokument finden
+    const group = await GroupsModel.findById(groupId);
+    if (!group) {
+      return res.status(404).send("Group not found");
+    }
+
+    // Dann den spezifischen Post innerhalb der Gruppe finden
+    const post = group.groupPosts.id(postId);
+    if (!post) {
+      return res.status(404).send("Post not found");
+    }
+
+    // Erstellen des Kommentars und Hinzufügen zum 'comments' Array des Posts
+    const newComment = {
+      text: commentText,
+      commenter: userId,
+      commentTime: new Date(), // Aktuelles Datum als Kommentarzeit setzen
+    };
+
+    post.comments.push(newComment); // Kommentar zum Array hinzufügen
+
+    // Das aktualisierte Gruppendokument speichern
+    await group.save();
+
+    // Erfolgreiche Antwort zurücksenden mit dem aktualisierten Post
+    res.status(201).json(post);
+  } catch (error) {
+    console.error("Error adding comment to post:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+/******************************************************
+ *   updateCommentLike ( Kommentare liken)
+ ******************************************************/
+
+const updateCommentLike = async (req, res) => {
+  // Logik zum Hinzufügen/Entfernen von Likes auf Kommentare
 };
 
 /******************************************************

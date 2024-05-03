@@ -3,18 +3,8 @@ import { Schema, model } from "mongoose";
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  confirmPassword: { type: String },
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  userName: { type: String, required: true },
   image: { type: String },
-  address: [
-    {
-      zip: { type: String, required: true },
-      street: { type: String, required: true },
-      number: { type: String, required: true },
-    },
-  ],
-  geoCode: [String], //* neu hinzugefügt!!!
   gender: { type: String },
   blockedUsers: [{ type: Schema.Types.ObjectId, ref: "users" }],
   followUsers: [{ type: Schema.Types.ObjectId, ref: "users" }],

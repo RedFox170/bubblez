@@ -24,7 +24,7 @@ export const UserProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    console.log("useEffect löst aus");
+   //  console.log("useEffect löst aus");
     if (userData !== null) {
       localStorage.setItem("userData", JSON.stringify(userData));
       setIsLoggedIn(true);
@@ -36,7 +36,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {}, [isLoggedIn]);
 
-  console.log({ userData });
+  // console.log({ userData });
 
   return (
     <UserContext.Provider

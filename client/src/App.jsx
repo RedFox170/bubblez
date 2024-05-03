@@ -20,7 +20,7 @@ const App = () => {
           <div className=" fixed reusableGlobalBackground "></div>
         </div>
 
-        <div className={`pt-14 flex flex-col w-full relative`}>
+        <div className={` flex flex-col w-full relative`}>
           <Outlet />
         </div>
       </section>

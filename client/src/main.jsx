@@ -2,19 +2,20 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import UserRegister from "./components/user/UserRegister.jsx";
 import UserLogin from "./components/user/UserLogin.jsx";
 import UserLogout from "./components/user/UserLogout.jsx";
 import Neighbours from "./components/Neighbours.jsx";
 import Home from "./components/landingpage/Home.jsx";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { UserProvider } from "./components/context/userContext.jsx";
+import { UsersProvider } from "./components/context/usersContext.jsx";
 import { ThemeProvider } from "./components/context/ThemeContext.jsx";
+import { GroupsProvider } from "./components/context/groupsContext.jsx";
 import Profile from "./components/user/Profile.jsx";
 import GroupForm from "./components/group/groupForm.jsx";
 import GroupOverview from "./components/group/GroupOverview.jsx";
-import { GroupsProvider } from "./components/context/groupsContext.jsx";
 import GroupComponent from "./components/group/GroupComponent.jsx";
 import Market from "./components/Market/Market.jsx";
 
@@ -86,11 +87,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
       <UserProvider>
-        <GroupsProvider>
-          <MarketProvider>
-            <RouterProvider router={router} />
-          </MarketProvider>
-        </GroupsProvider>
+        <UsersProvider>
+          <GroupsProvider>
+            <MarketProvider>
+              <RouterProvider router={router} />
+            </MarketProvider>
+          </GroupsProvider>
+        </UsersProvider>
       </UserProvider>
     </ThemeProvider>
   </React.StrictMode>

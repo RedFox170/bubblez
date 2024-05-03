@@ -91,37 +91,6 @@
         color: #334155;
 }
 
-/* .dropDownProfile{
-    position: absolute;
-    top: 4rem;
-    right: 1.5rem;
-    width: 6rem;
-    padding: 15px;
-    border: 1px solid gray;
-    border-radius: 8px;
-}
-
-.dropDownProfile::before{
-    content: '';
-    position: absolute;
-    top: -0.7rem;
-    right: 1.1rem;
-    width: 20px;
-    height: 20px;
-    transform: rotate(45deg);
-    border-left: 1px solid gray;
-    border-top: 1px solid gray;
-} */
-
-/* HEADER DROPDOWN PROFILE */
-/* .hide-profile{
-    cursor: pointer;
-}
-.hide-profile:hover{
-    cursor: pointer;
-    text-decoration: underline;
-} */
-
 .btn-profile{
     display: flex;
     position: relative;

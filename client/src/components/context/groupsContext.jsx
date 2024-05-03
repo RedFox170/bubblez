@@ -23,7 +23,7 @@ export const GroupsProvider = ({ children }) => {
   const [groupsData, setGroupsData] = useState(savedGroups || null);
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log("groupData in userContext:", groupsData);
+  // console.log("groupData in groupContext:", groupsData);
 
   useEffect(() => {
     if (groupsData !== null) {
@@ -31,7 +31,7 @@ export const GroupsProvider = ({ children }) => {
     }
   }, [groupsData]);
 
-  console.log({ groupsData });
+  // console.log({ groupsData });
 
   return (
     <GroupsContext.Provider

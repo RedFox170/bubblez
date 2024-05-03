@@ -4,7 +4,7 @@ import { useTheme } from "../context/ThemeContext";
 import { UserContext } from "../context/userContext.jsx";
 import { DropDownProfile } from "./DropDownProfile";
 import "./navbar.css";
-import Logo from "../assets/SupportStreetLogo.png";
+import Logo from "../assets/bubble_icon.png";
 
 const Navbar = () => {
   const { darkMode, toggleDarkMode } = useTheme();
@@ -22,7 +22,7 @@ const Navbar = () => {
       <div className="logo-and-title flex items-center">
         <Link className="logo-and-title flex items-center" to="./dashboard">
           <img src={Logo} className="logo-placeholder mr-2" alt="logo" />
-          <span>Support Street</span>
+          <span>Bubblez</span>
         </Link>
       </div>
       <div className="nav-items flex items-center gap-4">
