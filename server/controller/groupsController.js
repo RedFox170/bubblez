@@ -85,6 +85,29 @@ export const createGroup = async (req, res, next) => {
 };
 
 /******************************************************
+ *    getGroupDetails - Userdaten laden um Namen etc anzuzeigen
+ ******************************************************/
+
+export const getGroupDetails = async (req, res) => {
+  try {
+    const groupId = req.params.id;
+
+    const group = await GroupsModel.findById(groupId)
+      .populate("members", "userName image") // oder alle relevanten Felder, die du brauchst
+      .populate("mods", "userName image")
+      .populate("admins", "userName image")
+      .populate("groupPosts.commenter", "userName image")
+      .populate("groupPosts.comments.commenter", "userName image");
+    res.status(200).json(group);
+  } catch (error) {
+    res.status(500).json({
+      message: "Fehler beim Abrufen der Gruppendetails",
+      error: error.message,
+    });
+  }
+};
+
+/******************************************************
  *    getAllGroups
  ******************************************************/
 
@@ -348,15 +371,13 @@ export const unfollowGroup = async (req, res) => {
 /******************************************************
  *   createGroupPost
  ******************************************************/
-//! Checken ob der GroupsRouter createGroupPost richtig angeschlossen ist
 
 export const createGroupPost = async (req, res, next) => {
   const groupId = req.params.id;
-
   const { title, text, topic, image } = req.body;
-  console.log(req.body);
+
   try {
-    // Authentifizierung und Autorisierung (wie bereits in deinem Code)
+    // Authentifizierung
     const token = req.cookies.token;
     if (!token) {
       const error = new Error(
@@ -368,43 +389,41 @@ export const createGroupPost = async (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const user = decodedToken.user;
     const creatorId = user._id;
-    console.log(user);
-    console.log(creatorId);
+
     // Finde die Gruppe anhand ihrer ID und füge den neuen Beitrag hinzu
     const group = await GroupsModel.findById(groupId);
     if (!group) {
       return res.status(404).send({ message: "Gruppe nicht gefunden." });
     }
 
-    // Erstelle ein neues Post-Objekt für groupPosts
+    // Erstelle ein neues Post-Objekt
     const newPost = {
       title,
       text,
       topic,
-      image, // das Bild später hinzufügen
+      image,
       commenter: creatorId, // Ersteller des Beitrags
-      postTime: new Date(), // Erstellungsdatum speichern
+      postTime: new Date(),
     };
-    console.log("createGroupPost newPost kurz vorm Senden", newPost);
-    // Füge den neuen Beitrag zu groupPosts hinzu und speichere die Gruppe
+
+    // Füge den neuen Beitrag zu `groupPosts` hinzu
     group.groupPosts.push(newPost);
     await group.save();
 
-    // Sende eine Erfolgsantwort zurück mit dem gespeicherten Post-Objekt
-    const savedGroup = await group.save();
-    const savedPost = savedGroup.groupPosts[savedGroup.groupPosts.length - 1]; // Der zuletzt hinzugefügte Post
-    console.log("savedPost", savedPost);
+    // Hole den zuletzt hinzugefügten Beitrag und erweitere ihn um die Kommentatorinformationen
+    const savedPostId = group.groupPosts[group.groupPosts.length - 1]._id;
+    const populatedGroup = await GroupsModel.findById(groupId).populate(
+      "groupPosts.commenter",
+      "userName image"
+    );
+    const populatedPost = populatedGroup.groupPosts.find(
+      (post) => post._id.toString() === savedPostId.toString()
+    );
 
-    const newPostId = savedPost._id;
-    console.log("newPostId", newPostId);
-
-    // Extrahiere die ID des neu erstellten Posts
-    /*   const newPostId = group.groupPosts[group.groupPosts.length - 1]._id; */
-
+    // Sende den Beitrag inklusive der Kommentatorinformationen
     res.status(201).send({
       message: "Beitrag erfolgreich erstellt.",
-      post: savedPost,
-      postId: newPostId,
+      post: populatedPost,
     });
   } catch (error) {
     next(error);
@@ -460,6 +479,7 @@ export const toggleLikePost = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 /******************************************************
  *   addCommentToPost  (Antworten auf Kommentare)
  ******************************************************/

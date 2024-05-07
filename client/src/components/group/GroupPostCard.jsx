@@ -3,9 +3,9 @@ import Avatar from "../../../public/avatar-placeholder.png";
 import { useParams } from "react-router-dom";
 import { GroupsContext } from "../context/groupsContext";
 /* Zeitdarstellungspaket  Zeit bis jetzt in h */
-import { formatDistanceToNow } from 'date-fns';
-import { de } from 'date-fns/locale'; // Importiere das deutsche Locale
-import { UsersContext } from '../context/usersContext';
+import { formatDistanceToNow } from "date-fns";
+import { de } from "date-fns/locale"; // Importiere das deutsche Locale
+import { UsersContext } from "../context/usersContext";
 
 const GroupPostCard = ({ post }) => {
   const [reply, setReply] = useState("");
@@ -16,12 +16,11 @@ const GroupPostCard = ({ post }) => {
   const [comments, setComments] = useState(post.comments || []);
   const { usersData } = useContext(UsersContext);
 
-
-console.log("usersdata in GroupPostCard", usersData);
- /*  console.log("post in GroupPostCard", );
+  console.log("usersdata in GroupPostCard", usersData);
+  /*  console.log("post in GroupPostCard", );
 console.log("groupID in GroupPostCard", groupId);
 console.log("postID in GroupPostCard", postId); */
-console.log("groupsData in GroupPostCard", groupsData);
+  console.log("groupsData in GroupPostCard", groupsData);
 
   //userdaten für das ProfilBild
   const user = JSON.parse(localStorage.getItem("userData"));
@@ -51,65 +50,68 @@ console.log("groupsData in GroupPostCard", groupsData);
     }
   };
 
-    /******************************************************
+  /******************************************************
    *    GruppenPost Liken
    ******************************************************/
 
-    const handleLikeClick = async () => {
-      // Kopie des aktuellen Zustands, um bei einem Fehler zurückzusetzen
-      const currentGroupsData = [...groupsData];
-    
-      // Optimistisches Update des Zustands
-      setGroupsData(prevGroupsData => {
-        return prevGroupsData.map(group => {
+  const handleLikeClick = async () => {
+    // Kopie des aktuellen Zustands, um bei einem Fehler zurückzusetzen
+    const currentGroupsData = [...groupsData];
+
+    // Optimistisches Update des Zustands
+    setGroupsData((prevGroupsData) => {
+      return prevGroupsData.map((group) => {
+        if (group._id === groupId) {
+          return {
+            ...group,
+            groupPosts: group.groupPosts.map((post) =>
+              post._id === postId
+                ? { ...post, likes: [...post.likes, userId] }
+                : post
+            ),
+          };
+        }
+        return group;
+      });
+    });
+
+    try {
+      const response = await fetch(
+        `http://localhost:5500/likePost/${groupId}/${postId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: userId }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to like the post");
+      }
+
+      const updatedPost = await response.json();
+      console.log("Aktualisierter Post:", updatedPost);
+      // Bestätige das optimistische Update
+      setGroupsData((prevGroupsData) => {
+        return prevGroupsData.map((group) => {
           if (group._id === groupId) {
             return {
               ...group,
-              groupPosts: group.groupPosts.map(post =>
-                post._id === postId ? { ...post, likes: [...post.likes, userId] } : post
-              )
+              groupPosts: group.groupPosts.map((post) =>
+                post._id === updatedPost._id ? updatedPost : post
+              ),
             };
           }
           return group;
         });
       });
-    
-      try {
-        const response = await fetch(`http://localhost:5500/likePost/${groupId}/${postId}`, {
-          method: 'PUT',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: userId })
-        });
-    
-        if (!response.ok) {
-          throw new Error('Failed to like the post');
-        }
-    
-        const updatedPost = await response.json();
-        console.log("Aktualisierter Post:", updatedPost);
-        // Bestätige das optimistische Update
-        setGroupsData(prevGroupsData => {
-          return prevGroupsData.map(group => {
-            if (group._id === groupId) {
-              return {
-                ...group,
-                groupPosts: group.groupPosts.map(post => post._id === updatedPost._id ? updatedPost : post)
-              };
-            }
-            return group;
-          });
-        });
-      } catch (error) {
-        console.error('Error liking the post:', error);
-        // Setze bei Fehlern den vorherigen Zustand wieder her
-        setGroupsData(currentGroupsData);
-      }
-    };
-    
-    
-    
-  
+    } catch (error) {
+      console.error("Error liking the post:", error);
+      // Setze bei Fehlern den vorherigen Zustand wieder her
+      setGroupsData(currentGroupsData);
+    }
+  };
 
   /******************************************************
    *    Antworten auf Kommentare
@@ -121,17 +123,20 @@ console.log("groupsData in GroupPostCard", groupsData);
   const submitReply = async () => {
     if (reply.trim() !== "") {
       try {
-        const response = await fetch(`http://localhost:5500/addComment/${groupId}/${postId}`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            commentText: reply,
-            userId: userId
-          })
-        });
+        const response = await fetch(
+          `http://localhost:5500/addComment/${groupId}/${postId}`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              commentText: reply,
+              userId: userId,
+            }),
+          }
+        );
 
         if (response.ok) {
           const updatedPost = await response.json();
@@ -139,42 +144,41 @@ console.log("groupsData in GroupPostCard", groupsData);
           setReply("");
 
           // Update des globalen Contexts, um den Post im UI zu aktualisieren
-          setGroupsData(previousGroupsData => {
-            return previousGroupsData.map(group => {
+          setGroupsData((previousGroupsData) => {
+            return previousGroupsData.map((group) => {
               if (group._id === groupId) {
                 return {
                   ...group,
-                  groupPosts: group.groupPosts.map(post => 
+                  groupPosts: group.groupPosts.map((post) =>
                     post._id === updatedPost._id ? updatedPost : post
-                  )
+                  ),
                 };
               }
               return group; // Wenn die Gruppe nicht die gesuchte ist, gebe sie unverändert zurück
             });
           });
-            // Update des lokalen Kommentar-States
-        setComments(updatedPost.comments);
+          // Update des lokalen Kommentar-States
+          setComments(updatedPost.comments);
         } else {
-          throw new Error('Failed to add comment to post');
+          throw new Error("Failed to add comment to post");
         }
       } catch (error) {
-        console.error('Error adding comment to post:', error);
+        console.error("Error adding comment to post:", error);
       }
     }
   };
 
-    /******************************************************
+  /******************************************************
    *    Kommentare anzeigen (ein- und ausklappen)
    ******************************************************/
-    const toggleCommentsVisibility = () => {
-      setShowComments(!showComments);
-      console.log("showComments in GroupPostCard", showComments);
-    };
+  const toggleCommentsVisibility = () => {
+    setShowComments(!showComments);
+    console.log("showComments in GroupPostCard", showComments);
+  };
 
-    console.log("comments in GroupPostCard", comments);
-    
+  console.log("comments in GroupPostCard", comments);
 
-   return (
+  return (
     <div className="reusableBorder  mt-4 p-4 flex flex-col w-full">
       {/* Kopfzeile mit Profilbild, Name und Datum */}
       <div className="flex justify-between items-center mb-4">
@@ -185,7 +189,7 @@ console.log("groupsData in GroupPostCard", groupsData);
             className="h-10 w-10 rounded-full"
           />
           <div className="text-base ml-4 font-semibold text-gray-900 dark:text-gray-100">
-            {user.firstName} {user.lastName}
+            {post.commenter.userName}
           </div>
         </aside>
         <aside>{formattedDate}</aside>
@@ -208,7 +212,11 @@ console.log("groupsData in GroupPostCard", groupsData);
 
       {/* Fußzeile mit Like- und Kommentar-Buttons */}
       <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-        <button type="button" className="flex items-center" onClick={handleLikeClick}>
+        <button
+          type="button"
+          className="flex items-center"
+          onClick={handleLikeClick}
+        >
           <span className="mr-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -227,15 +235,20 @@ console.log("groupsData in GroupPostCard", groupsData);
           </span>
           <span>{post.likes.length}</span>
         </button>
-        <button onClick={toggleCommentsVisibility} className="text-gray-600 hover:text-gray-800">
+        <button
+          onClick={toggleCommentsVisibility}
+          className="text-gray-600 hover:text-gray-800"
+        >
           Alle {comments.length} Kommentare anzeigen
         </button>
       </div>
-      
+
       {showComments && (
         <div className="mt-2">
           {comments.map((comment) => {
-            const commenter = usersData.find(user => user._id === comment.commenter);
+            const commenter = usersData.find(
+              (user) => user._id === comment.commenter
+            );
             return (
               <div key={comment._id} className="mt-4 flex items-center">
                 <img
@@ -246,10 +259,15 @@ console.log("groupsData in GroupPostCard", groupsData);
                 <div className="flex-grow">
                   <div className="flex justify-between">
                     <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                      {commenter ? `${commenter.firstName} ${commenter.lastName}` : 'Unbekannter Nutzer'}
+                      {commenter
+                        ? `${post.commenter.userName}`
+                        : "Unbekannter Nutzer"}
                     </span>
                     <span>
-                      {formatDistanceToNow(new Date(comment.commentTime), { addSuffix: true, locale: de })}
+                      {formatDistanceToNow(new Date(comment.commentTime), {
+                        addSuffix: true,
+                        locale: de,
+                      })}
                     </span>
                   </div>
                   <p>{comment.text}</p>

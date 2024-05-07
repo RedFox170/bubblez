@@ -7,9 +7,7 @@ import UserModell from "../models/userSchema.js";
 export const getAllUsers = async (req, res) => {
   console.log("userController löst aus!!!");
   try {
-    const users = await UserModell.find().select(
-      "firstName lastName _id groups image"
-    );
+    const users = await UserModell.find().select("userName _id groups image");
     console.log("Alle Benutzerdaten:", users);
     res.status(200).json(users);
   } catch (error) {

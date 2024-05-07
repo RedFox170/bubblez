@@ -2,46 +2,51 @@ import UserModell from "../models/userSchema.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "./jwtController.js";
 import jwt from "jsonwebtoken";
+import zxcvbn from "zxcvbn";
 
 /******************************************************
  *    registerController
  ******************************************************/
 
 export const registerController = async (req, res) => {
-  try {
-    const { email, password, confirmPassword, userName, followUsers, groups } =
-      req.body;
+  const { email, password, confirmPassword, userName } = req.body;
 
+  try {
     // Überprüfen, ob die E-Mail bereits existiert
     const existingUser = await UserModell.findOne({ email });
     if (existingUser) {
-      return res
-        .status(409)
-        .send({ message: "Email already exists. Please try again." });
+      return res.status(409).json({ message: "Email already exists." });
     }
 
     // Überprüfen, ob das Passwort und die Bestätigung übereinstimmen
     if (password !== confirmPassword) {
-      return res.status(400).send("Passwords do not match");
+      return res.status(400).json({ message: "Passwords do not match." });
+    }
+
+    // Überprüfen der Passwortstärke
+    const passwordStrength = zxcvbn(password);
+    if (passwordStrength.score < 3) {
+      // Die Skala reicht von 0 (sehr schwach) bis 4 (sehr stark)
+      return res.status(400).json({ message: "Password is too weak." });
     }
 
     // Passwort hashen
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Benutzer erstellen und in die Datenbank speichern
+    // Neuen Benutzer erstellen und speichern
     const newUser = await UserModell.create({
       email,
       userName,
       password: hashedPassword,
-      followUsers,
-      groups,
     });
 
-    // Erfolgreiche Antwort senden
-    res.status(201).send({ message: "User successfully registered" });
+    // Erfolgreiche Registrierung
+    res
+      .status(201)
+      .json({ message: "User successfully registered", user: newUser });
   } catch (error) {
     console.error("Registration failed.", error);
-    res.status(500).send({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -100,10 +105,15 @@ export const loginController = async (req, res, next) => {
  ******************************************************/
 //! muss hier noch ein JWT Token gelöscht werden?
 
-export const logoutController = async (req, res) => {
-  console.log("user ausgeloggt");
-  res.clearCookie("token");
-  res.status(200).send("cookie cleared. User logged out.");
+// Beispiel: Logout-Controller
+export const logoutController = (req, res) => {
+  res.clearCookie("token", {
+    path: "/", // Der gleiche Pfad wie beim Setzen des Cookies
+    httpOnly: true,
+    secure: true, // oder false, wenn nicht über HTTPS
+    sameSite: "Strict", // oder je nach Anforderung
+  });
+  res.status(200).json({ message: "Logged out successfully" });
 };
 
 /******************************************************

@@ -12,6 +12,12 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
     setSelectedTopic(topic);
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "title") setTitle(value);
+    if (name === "text") setText(value);
+  };
+
   /******************************************************
    *    Cloudinary
    ******************************************************/
@@ -32,32 +38,31 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
    * und überprüfung der Länge des Betreffs und der Nachricht
    ******************************************************/
 
-  const validateAndSubmitForm = async (prevPosts) => {
-    prevPosts.preventDefault(); // Verhindert das Standardverhalten des Formulars
+  const validateAndSubmitForm = async (event) => {
+    event.preventDefault();
 
-    // Validierung für 'betreff'
+    // Validierung für 'Betreff'
     if (title.length < 2 || title.length > 50) {
       setErrorMessage("Der Betreff muss zwischen 2 und 50 Zeichen lang sein.");
       return;
     }
 
-    // Validierung für 'message'
+    // Validierung für 'Nachricht'
     if (text.length < 2 || text.length > 5000) {
       setErrorMessage(
         "Die Nachricht muss zwischen 2 und 5000 Zeichen lang sein."
       );
-      return; // Stoppt die Funktion, wenn die Validierung fehlschlägt
+      return;
     }
 
-    // Wenn die Validierung erfolgreich ist, fahre mit dem Senden der Daten fort
-    setErrorMessage(""); // Bereinigt eventuelle vorherige Fehlermeldungen
+    // Fortfahren mit dem Senden der Daten
+    setErrorMessage(""); // Vorherige Fehlermeldungen bereinigen
 
     const formData = {
       title,
       text,
       topic: selectedTopic,
     };
-    console.log("FormData aus MitteilungForm", formData);
 
     try {
       const response = await fetch(
@@ -71,19 +76,11 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
           credentials: "include",
         }
       );
-      console.log(response);
 
       if (response.ok) {
         const data = await response.json();
-        closeModal(); // Schließt das Formular/Modal nach dem erfolgreichen Absenden
-        if (data.post && data.post._id) {
-          // Stelle sicher, dass die Post-ID vorhanden ist
-          setGroupPosts((prevPosts) => [...prevPosts, data.post]);
-          localStorage.setItem(
-            "groupsData",
-            JSON.stringify([...prevPosts, data.post])
-          ); // Aktualisiere den localStorage korrekt
-        }
+        closeModal(); // Schließt das Modal nach dem Absenden
+        setGroupPosts((prevPosts) => [...prevPosts, data.post]);
       } else {
         console.error("Fehler beim Speichern des Posts");
         setErrorMessage("Es gab ein Problem beim Speichern Ihres Posts.");
@@ -131,17 +128,19 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
             <section className="space-y-4">
               <input
                 type="text"
+                name="title"
                 placeholder="Betreff"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={handleInputChange}
                 minLength="2"
                 maxLength="50"
                 className="w-full p-2 border border-gray-300 rounded-md"
               />
               <textarea
+                name="text"
                 placeholder="Deine Nachricht"
                 value={text}
-                onChange={(e) => setText(e.target.value)}
+                onChange={handleInputChange}
                 minLength="2"
                 maxLength="5000"
                 className="w-full h-32 p-2 border border-gray-300 rounded-md"

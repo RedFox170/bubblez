@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { UserContext } from "../context/userContext.jsx";
@@ -10,8 +10,25 @@ const Navbar = () => {
   const { darkMode, toggleDarkMode } = useTheme();
   const { isLoggedIn } = useContext(UserContext);
   const [menuVisible, setMenuVisible] = useState(false);
+  const menuRef = useRef(null);
 
-  const toggleMenu = () => setMenuVisible(!menuVisible);
+  const toggleMenu = (event) => {
+    event.stopPropagation(); // Verhindert, dass der Klick weitergeleitet wird
+    setMenuVisible(!menuVisible);
+  };
+
+  const closeMenu = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setMenuVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", closeMenu);
+    return () => {
+      document.removeEventListener("click", closeMenu);
+    };
+  }, []);
 
   return (
     <nav
@@ -83,7 +100,7 @@ const Navbar = () => {
         </button>
 
         {menuVisible && (
-          <div className="dropdown-menu">
+          <div ref={menuRef} className="dropdown-menu">
             {isLoggedIn ? (
               <>
                 <NavLink to="/dashboard" onClick={toggleMenu}>
