@@ -92,7 +92,7 @@ const GroupComponent = () => {
     // Für jeden Benutzer ein eigenes JSX-Element zurückgeben
     return users.map((user, index) => (
       <span key={user._id}>
-        <Link to={`/profile/${user._id}`} className="user-link">
+        <Link to={`/profile/${user._id}`} key={user.id} className="user-link">
           {user.userName}
         </Link>
         {index < users.length - 1 && ", "}

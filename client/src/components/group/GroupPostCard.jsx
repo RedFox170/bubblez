@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import Avatar from "../../../public/avatar-placeholder.png";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { GroupsContext } from "../context/groupsContext";
 /* Zeitdarstellungspaket  Zeit bis jetzt in h */
 import { formatDistanceToNow } from "date-fns";
@@ -42,8 +42,9 @@ console.log("postID in GroupPostCard", postId); */
   /******************************************************
    *    Profilpic
    ******************************************************/
+
   const profilImg = () => {
-    if (user.image === undefined || null) {
+    if (user.image === undefined || user.image === null || user.image === "") {
       return Avatar;
     } else {
       return user.image;
@@ -182,16 +183,21 @@ console.log("postID in GroupPostCard", postId); */
     <div className="reusableBorder  mt-4 p-4 flex flex-col w-full">
       {/* Kopfzeile mit Profilbild, Name und Datum */}
       <div className="flex justify-between items-center mb-4">
-        <aside className="flex items-center">
-          <img
-            src={profilImg()}
-            alt="Profilbild"
-            className="h-10 w-10 rounded-full"
-          />
-          <div className="text-base ml-4 font-semibold text-gray-900 dark:text-gray-100">
-            {post.commenter.userName}
-          </div>
-        </aside>
+        <Link
+          to={`/profile/${post.commenter._id}`}
+          className="flex items-center"
+        >
+          <aside className="flex items-center">
+            <img
+              src={profilImg()}
+              alt="Profilbild"
+              className="h-10 w-10 rounded-full"
+            />
+            <div className="text-base ml-4 font-semibold text-gray-900 dark:text-gray-100">
+              {post.commenter.userName}
+            </div>
+          </aside>
+        </Link>
         <aside>{formattedDate}</aside>
       </div>
 
@@ -250,19 +256,28 @@ console.log("postID in GroupPostCard", postId); */
 
             return (
               <div key={comment._id} className="mt-4 flex items-center">
-                <img
-                  src={commenter?.image || Avatar} // Verwende das Bild aus `commenter`, wenn vorhanden
-                  alt="Profilbild"
-                  className="h-10 w-10 rounded-full mr-4"
-                />
+                <Link
+                  to={`/profile/${commenter._id}`}
+                  className="flex items-center"
+                >
+                  <img
+                    src={commenter?.image || Avatar} // Verwende das Bild aus `commenter`, wenn vorhanden
+                    alt="Profilbild"
+                    className="h-10 w-10 rounded-full mr-4"
+                  />
+                </Link>
                 <div className="flex-grow">
                   <div className="flex justify-between">
-                    <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                      {commenter
-                        ? `${commenter.userName}`
-                        : "Unbekannter Nutzer"}{" "}
-                      {/* Verwende `userName` */}
-                    </span>
+                    <Link
+                      to={`/profile/${commenter._id}`}
+                      className="flex items-center"
+                    >
+                      <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {commenter
+                          ? `${commenter.userName}`
+                          : "Ehemaliger Nutzer"}{" "}
+                      </span>
+                    </Link>
                     <span>
                       {formatDistanceToNow(new Date(comment.commentTime), {
                         addSuffix: true,

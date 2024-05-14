@@ -67,7 +67,7 @@ export const DropDownProfile = () => {
         >
           <ul className="flex flex-col">
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <NavLink to="/profile" className="block">
+              <NavLink to="/updateprofile" className="block">
                 Profile
               </NavLink>
             </li>
