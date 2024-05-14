@@ -246,13 +246,12 @@ console.log("postID in GroupPostCard", postId); */
       {showComments && (
         <div className="mt-2">
           {comments.map((comment) => {
-            const commenter = usersData.find(
-              (user) => user._id === comment.commenter
-            );
+            const commenter = comment.commenter; // Verwende direkt das bevölkerte Kommentator-Objekt
+
             return (
               <div key={comment._id} className="mt-4 flex items-center">
                 <img
-                  src={commenter?.image || Avatar}
+                  src={commenter?.image || Avatar} // Verwende das Bild aus `commenter`, wenn vorhanden
                   alt="Profilbild"
                   className="h-10 w-10 rounded-full mr-4"
                 />
@@ -260,8 +259,9 @@ console.log("postID in GroupPostCard", postId); */
                   <div className="flex justify-between">
                     <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
                       {commenter
-                        ? `${post.commenter.userName}`
-                        : "Unbekannter Nutzer"}
+                        ? `${commenter.userName}`
+                        : "Unbekannter Nutzer"}{" "}
+                      {/* Verwende `userName` */}
                     </span>
                     <span>
                       {formatDistanceToNow(new Date(comment.commentTime), {
