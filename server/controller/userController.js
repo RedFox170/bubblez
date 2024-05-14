@@ -117,6 +117,22 @@ export const logoutController = (req, res) => {
 };
 
 /******************************************************
+ *    getUserById (zB für Profilansicht)
+ ******************************************************/
+
+export const getUserById = async (req, res, next) => {
+  try {
+    const user = await UserModell.findById(req.params.id);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+/******************************************************
  *    editUser
  ******************************************************/
 //! Id muss frontendseitig mitgeschickt werden

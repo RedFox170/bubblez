@@ -48,7 +48,7 @@ export const authorizeUser = (req, res, next) => {
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     // 4. bei einem fehler, senden wir einen error zurück
     if (err) return res.status(401).send("Invalid token");
-    console.log("Decoded user:", user);
+    /* console.log("Decoded user:", user); */
     // wir wollen den user in der nächsten middleware verwenden.
     req.user = user;
     // console.log("req.user authController", user);
