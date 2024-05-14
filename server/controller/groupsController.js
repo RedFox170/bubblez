@@ -514,8 +514,19 @@ export const createGroupPostComment = async (req, res) => {
     // Das aktualisierte Gruppendokument speichern
     await group.save();
 
-    // Erfolgreiche Antwort zurücksenden mit dem aktualisierten Post
-    res.status(201).json(post);
+    // Um sicherzustellen, dass der neu hinzugefügte Kommentar korrekt bevölkert wird
+    const populatedPost = await GroupsModel.findById(groupId)
+      .populate({
+        path: "groupPosts.comments.commenter",
+        select: "userName image",
+      })
+      .then((group) => group.groupPosts.id(postId));
+
+    // Beispiel für detailliertes Logging des Kommentator-Objekts
+    console.log(JSON.stringify(populatedPost, null, 2));
+
+    // Sende eine Erfolgsantwort zurück mit dem aktualisierten und bevölkerten Post
+    res.status(201).json(populatedPost);
   } catch (error) {
     console.error("Error adding comment to post:", error);
     res.status(500).send("Internal Server Error");

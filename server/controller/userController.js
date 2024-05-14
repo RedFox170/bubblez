@@ -123,28 +123,26 @@ export const logoutController = (req, res) => {
 //! so kann nutzer sowie admin den controller verwenden
 
 export const editUser = async (req, res, next) => {
-  // "extrahiere" Adressdaten jeweils in eine Variable und den rest in ein "rest" Object
-  const { street, number, zip, ...rest } = req.body;
+  // Extrahiere die Felder aus dem req.body
+  const { city, firstName, aboutMe, image = null, ...rest } = req.body;
 
-  // Kopiere das rest Object in structureObj(=> das Object, das am Ende der DB übergeben werden soll)
+  // Kopiere das rest Object in structuredObj
   const structuredObj = { ...rest };
 
-  // Füge nur Adress-Angaben hinzu, die einen Wert haben
-
-  if (street) structuredObj["address.0.street"] = street;
-  if (number) structuredObj["address.0.number"] = number;
-  if (zip) structuredObj["address.0.zip"] = zip;
+  // Füge nur Felder hinzu, die einen Wert haben
+  if (city) structuredObj["city"] = city;
+  if (firstName) structuredObj["firstName"] = firstName;
+  if (aboutMe) structuredObj["aboutMe"] = aboutMe;
+  if (typeof image === "string") structuredObj["image"] = image; // Nur Strings zulassen
 
   // Null bedeutet löschen
-  if (street === null) structuredObj["address.0.street"] = "";
-  if (number === null) structuredObj["address.0.number"] = "";
-  if (zip === null) structuredObj["address.0.zip"] = "";
-
-  // console.log("structuredObj", structuredObj);
+  if (city === null) structuredObj["city"] = "";
+  if (firstName === null) structuredObj["firstName"] = "";
+  if (aboutMe === null) structuredObj["aboutMe"] = "";
+  if (image === null) structuredObj["image"] = ""; // Sicherstellen, dass es als String gesetzt wird
 
   try {
     const userId = req.params.id;
-    // console.log("body:", req.body);
     const options = { new: true };
 
     const user = await UserModell.findByIdAndUpdate(
@@ -152,9 +150,7 @@ export const editUser = async (req, res, next) => {
       { $set: structuredObj },
       options
     );
-    // console.log(user, userId);
 
-    // console.log("user nach findeIDAndUpdate", user);
     if (!user) {
       const error = new Error("User not found");
       error.statusCode = 404;
@@ -167,7 +163,6 @@ export const editUser = async (req, res, next) => {
     res.status(error.status || 500).send({ message: error.message });
   }
 };
-
 /******************************************************
  *    deleteUser
  ******************************************************/
