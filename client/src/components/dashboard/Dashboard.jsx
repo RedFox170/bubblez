@@ -21,13 +21,11 @@ const Dashboard = () => {
             </div>
           </Link>
           <Link
-            to="/neighbours"
+            to="/feed"
             className="reusableSquareDash absolute"
             style={{ "--i": 6 }}
           >
-            <div className="square-link text-center font-bold">
-              Meine Nachbarschaft
-            </div>
+            <div className="square-link text-center font-bold">Mein Feed</div>
           </Link>
           <Link
             to="/market"
@@ -49,7 +47,7 @@ const Dashboard = () => {
             style={{ "--i": 9 }}
           >
             <div className="square-link text-center font-bold">
-              Nachbarn einladen
+              Freunde einladen
             </div>
           </Link>
         </div>

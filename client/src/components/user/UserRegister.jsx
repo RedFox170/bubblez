@@ -1,8 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import "../reuseable/styles/reusableFormComponents.css";
 import "../reuseable/styles/reusableGlobal.css";
 import zxcvbn from "zxcvbn";
 
 const UserRegister = () => {
+  const navigate = useNavigate();
+
   const submitHandler = async (event) => {
     event.preventDefault();
     const el = event.target.elements;
@@ -46,6 +49,7 @@ const UserRegister = () => {
         console.log("Registration successful:", data);
         event.target.reset();
         alert("Sie haben sich erfolgreich registriert.");
+        navigate("/login");
       } else {
         const error = await response.text();
         console.error("Registration failed:", error);

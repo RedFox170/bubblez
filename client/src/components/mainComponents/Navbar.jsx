@@ -112,9 +112,6 @@ const Navbar = () => {
                 <NavLink to="/market" onClick={toggleMenu}>
                   Marktplatz
                 </NavLink>
-                <NavLink to="/neighbours" onClick={toggleMenu}>
-                  Nachbarschaft
-                </NavLink>
               </>
             ) : (
               <>

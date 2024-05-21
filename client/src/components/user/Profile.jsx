@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Avatar from "/avatar-icon.jpg";
 
 const Profile = () => {
@@ -7,15 +7,27 @@ const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  /******************************************************
+   *    fetchUserData
+   ******************************************************/
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await fetch(`http://localhost:5500/users/${userId}`);
+        const res = await fetch(`http://localhost:5500/users/${userId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch user data");
+        }
         const data = await res.json();
         setUserData(data);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching user data:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -23,6 +35,33 @@ const Profile = () => {
     fetchUserData();
   }, [userId]);
 
+  /******************************************************
+   *    freunde hinzufügen
+   ******************************************************/
+
+  const addFriend = async () => {
+    try {
+      const res = await fetch(`http://localhost:5500/addFriend/${userId}`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) {
+        throw new Error("Failed to add friend");
+      }
+      const data = await res.json();
+      console.log("Friend added:", data);
+      // Aktualisiere den Benutzerzustand oder zeige eine Erfolgsmeldung an
+    } catch (error) {
+      console.error("Error adding friend:", error);
+    }
+  };
+
+  /******************************************************
+   *    Profilbild
+   ******************************************************/
   const profilImg = () => {
     if (!userData?.image) {
       return Avatar;
@@ -30,6 +69,30 @@ const Profile = () => {
       return userData.image;
     }
   };
+
+  /******************************************************
+   *    Formatierte Listen
+   ******************************************************/
+
+  const formatUserList = (users) => {
+    if (!Array.isArray(users) || users.length === 0) {
+      return "Keine Benutzer vorhanden";
+    }
+
+    // Für jeden Benutzer ein eigenes JSX-Element zurückgeben
+    return users.map((user, index) => (
+      <span key={user._id}>
+        <Link to={`/profile/${user._id}`} key={user.id} className="user-link">
+          {user.userName}
+        </Link>
+        {index < users.length - 1 && ", "}
+      </span>
+    ));
+  };
+
+  /******************************************************
+   *    Datum Formatieren
+   ******************************************************/
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -43,6 +106,10 @@ const Profile = () => {
   if (!userData) {
     return <p>Benutzerdaten konnten nicht geladen werden.</p>;
   }
+
+  /******************************************************
+   *  Return
+   ******************************************************/
 
   return (
     <section className="flex justify-center min-h-screen w-full p-4">
@@ -58,6 +125,11 @@ const Profile = () => {
           <h3 className="text-2xl font-bold">{userData.userName}</h3>
           <p className="text-gray-600">{userData.firstName}</p>
         </div>
+        <div>
+          <button onClick={addFriend}>Adden</button>
+          <button>Nachricht senden</button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-1 col-span-full">
             <h4 className="block text-gray-700 font-bold mb-1">Geburtstag:</h4>
@@ -97,6 +169,14 @@ const Profile = () => {
             <h4 className="block text-gray-700 font-bold mb-1">Über mich:</h4>
             <p className="border rounded-md p-2 bg-gray-50">
               {userData.aboutMe || "Nicht angegeben"}
+            </p>
+          </div>
+          <div className="col-span-full">
+            <h4 className="block text-gray-700 font-bold mb-1">Freunde:</h4>
+            <p className="border rounded-md p-2 bg-gray-50">
+              {userData.followUsers.length > 0
+                ? formatUserList(userData.followUsers)
+                : "Noch keine Freunde geaddet."}
             </p>
           </div>
         </div>

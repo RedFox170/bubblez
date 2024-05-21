@@ -4,7 +4,6 @@
 # ToDo´s, Fehler und Bugs
 
 ### neue Baustellen
-- [ ] Gruppen Array Leer / kann keiner gruppe mehr joinen
 - [ ] Like Button defekt
 
 ### ToDo
@@ -13,16 +12,19 @@
 - [x] formular layout (inputfelder pr.4)
 - [x] bürgermenü soll ausgeblendet werden sobald ich woanders hin klicke
 - [x] Profil bearbeiten reparieren
-- [ ] Profil bearbeiten -> Backend authoirze user mit rein nehmen
-- [ ] nach dem registrieren wieder auf login kommen (modal mit weiteren angaben)
-- [ ] wenn ich nicht eingeloggt bin gelang ich beim klick auf
+- [x] Profil bearbeiten -> Backend authoirze user mit rein nehmen
+- [x] nach dem registrieren wieder auf login kommen (modal mit weiteren angaben)
+- [x] Gruppe Verlassen funktion
+- [x] nach dem ausloggen wieder auf startbildschirm kommen
+- [x] Marktitem Erstellen ist defekt
+- [x] Blur effekt auf marktitems
+- [x] Freund*in Hinzufügen Button + Anzeigen Liste mit freunden
 - [ ] Nutzer Beiträge (feed)
 - [ ] bilder upload für Gruppenbeiträge, Avatar; Feed-Beiträge
-- [ ] nach dem ausloggen wieder auf startbildschirm kommen
 - [ ] Landingpage soll Vision der App transportieren
-- [ ] Gruppe Verlassen funktion
-- [ ] Marktitem Erstellen ist defekt
-- [ ] 
+Gruppe muss beim verlassen auch die group vom user entfernen.
+- [ ] wenn ich nicht eingeloggt bin gelang ich beim klick vom Logo aufs Dashboard
+- [ ] GruppenOverview und Marktoverview, Profilansicht unterlabt sich mit navbar
 
 ### State/Storage/Cookie Probleme:
 - [?] Usersdata Cookie wird beim logout nicht gelöscht - brauch ich nicht mehr
@@ -34,5 +36,4 @@
 Beim nochmaligen Versuch klappt es ohne probleme.
 
 - [ ] 
-
 

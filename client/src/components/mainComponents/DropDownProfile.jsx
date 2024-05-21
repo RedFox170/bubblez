@@ -67,15 +67,20 @@ export const DropDownProfile = () => {
         >
           <ul className="flex flex-col">
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+              <NavLink to="/profile" className="block">
+                Profile anzeigen
+              </NavLink>
+            </li>
+            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
               <NavLink to="/updateprofile" className="block">
-                Profile
+                Profile bearbeiten
               </NavLink>
             </li>
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
               Settings
             </li>
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <NavLink to="/logout" onClick={UserLogout} className="block">
+              <NavLink to="/" onClick={UserLogout} className="block">
                 Logout
               </NavLink>
             </li>

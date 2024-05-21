@@ -117,18 +117,82 @@ export const logoutController = (req, res) => {
 };
 
 /******************************************************
- *    getUserById (zB für Profilansicht)
+ *    getUserData
+ ******************************************************/
+export const getUserData = async (req, res) => {
+  try {
+    const userId = req.user.user._id;
+    const user = await UserModell.findById(userId).populate("groups");
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+
+/******************************************************
+ *    getUserById (z.B. für Profilansicht)
  ******************************************************/
 
 export const getUserById = async (req, res, next) => {
   try {
-    const user = await UserModell.findById(req.params.id);
+    const user = await UserModell.findById(req.params.id).populate(
+      "followUsers",
+      "userName image"
+    );
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
     res.send(user);
   } catch (error) {
     res.status(500).send({ message: error.message });
+  }
+};
+
+/******************************************************
+ *    addFriend
+ ******************************************************/
+
+export const addFriend = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res
+        .status(401)
+        .send("Authorization failed: JWT token not found in cookie");
+    }
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const currentUserId = decodedToken.user._id;
+
+    const friendId = req.params.id; // Beachte hier die Änderung
+
+    // Überprüfe, ob der Benutzer sich selbst als Freund hinzufügen möchte
+    if (currentUserId === friendId) {
+      return res.status(400).send("You cannot add yourself as a friend.");
+    }
+
+    // Finde den aktuellen Benutzer
+    const currentUser = await UserModell.findById(currentUserId);
+
+    // Überprüfe, ob der Benutzer bereits als Freund hinzugefügt wurde
+    if (currentUser.followUsers.includes(friendId)) {
+      return res.status(400).send("User is already in your friends list.");
+    }
+
+    // Füge den Freund zur Liste hinzu und speichere den Benutzer
+    currentUser.followUsers.push(friendId);
+    await currentUser.save();
+
+    res.status(200).send({
+      message: "Friend added successfully",
+      followUsers: currentUser.followUsers,
+    });
+  } catch (error) {
+    console.error("Error adding friend:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
@@ -179,6 +243,7 @@ export const editUser = async (req, res, next) => {
     res.status(error.status || 500).send({ message: error.message });
   }
 };
+
 /******************************************************
  *    deleteUser
  ******************************************************/

@@ -6,6 +6,8 @@ import {
   logoutController,
   registerController,
   getUserById,
+  getUserData,
+  addFriend,
 } from "../controller/userController.js";
 import {
   authenticateUser,
@@ -18,9 +20,11 @@ const userRouter = express.Router();
 //!          /:id ist für user
 userRouter.post("/register", registerController);
 userRouter.post("/login", authenticateUser, loginController);
+userRouter.post("/addFriend/:id", authorizeUser, addFriend);
 userRouter.post("/logout", logoutController);
-userRouter.get("/users/:id", getUserById);
-userRouter.patch("/edit/:id", editUser);
+userRouter.get("/users/:id", authorizeUser, getUserById);
+userRouter.patch("/edit/:id", authorizeUser, editUser);
 userRouter.delete("/:id", authorizeUser, deleteUser);
+userRouter.get("/getUserData", authorizeUser, getUserData);
 
 export default userRouter;

@@ -10,7 +10,7 @@ import "../reuseable/styles/reusableFormComponents.css";
 import { Link } from "react-router-dom";
 
 const GroupOverview = () => {
-  const { userData } = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const { groupsData, setGroupsData } = useContext(GroupsContext);
   const [searchInputVisible, setSearchInputVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -21,9 +21,8 @@ const GroupOverview = () => {
   // console.log("Userdata Groups in overwiev:", userData.groups);
 
   /******************************************************
-   *    Groupsfetch und daten in den Context laden
+   *   Gruppen- und Benutzerdaten abrufen und aktualisieren
    ******************************************************/
-  //^ am ende mal schauen ob der GruppenContext notwendig ist
 
   useEffect(() => {
     const fetchGroupsData = async () => {
@@ -33,15 +32,32 @@ const GroupOverview = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        console.log("data overview", data);
+        console.log("Fetched group data:", data);
         setGroupsData(data);
       } catch (error) {
         console.error("Error fetching group data:", error);
       }
     };
 
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:5500/getUserData", {
+          credentials: "include",
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        console.log("Fetched user data:", data);
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
     fetchGroupsData();
-  }, []);
+    fetchUserData();
+  }, [setGroupsData, setUserData]);
 
   /******************************************************
    *    SuchFunktion

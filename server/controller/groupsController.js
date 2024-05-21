@@ -327,7 +327,7 @@ export const followGroup = async (req, res) => {
 };
 
 /******************************************************
- *   unfollowGroup (entfernt Benutzer aus Gruppe und Gruppe aus Benutzer)
+ *   unfollowGroup (entfernt Benutzer aus Gruppe und Gruppe aus Benutzer DB)
  ******************************************************/
 
 export const unfollowGroup = async (req, res) => {
@@ -341,7 +341,7 @@ export const unfollowGroup = async (req, res) => {
       members: userId,
     });
 
-    console.log("group in unfollowGroup Controller", group);
+    console.log("Group found:", group);
 
     if (!group) {
       return res
@@ -350,14 +350,18 @@ export const unfollowGroup = async (req, res) => {
     }
 
     // Benutzer aus der Gruppe entfernen
-    await GroupsModel.findByIdAndUpdate(groupId, {
+    const updateGroupResult = await GroupsModel.findByIdAndUpdate(groupId, {
       $pull: { members: userId },
     });
 
+    console.log("Update group result:", updateGroupResult);
+
     // Gruppe aus der Liste der Gruppen des Benutzers entfernen
-    await UserModell.findByIdAndUpdate(userId, {
-      $pull: { groups: { groupId: groupId } },
+    const updateUserResult = await UserModell.findByIdAndUpdate(userId, {
+      $pull: { groups: groupId },
     });
+
+    console.log("Update user result:", updateUserResult);
 
     return res
       .status(200)
