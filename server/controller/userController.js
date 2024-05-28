@@ -103,16 +103,16 @@ export const loginController = async (req, res, next) => {
 /******************************************************
  *    logoutController
  ******************************************************/
-//! muss hier noch ein JWT Token gelöscht werden?
 
-// Beispiel: Logout-Controller
 export const logoutController = (req, res) => {
+  console.log("User logged out");
   res.clearCookie("token", {
     path: "/", // Der gleiche Pfad wie beim Setzen des Cookies
     httpOnly: true,
     secure: true, // oder false, wenn nicht über HTTPS
     sameSite: "Strict", // oder je nach Anforderung
   });
+  console.log("User logged out");
   res.status(200).json({ message: "Logged out successfully" });
 };
 

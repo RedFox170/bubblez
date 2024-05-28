@@ -437,47 +437,41 @@ export const createGroupPost = async (req, res, next) => {
 /******************************************************
  *   toggleLikePost (GruppenPosts liken)
  ******************************************************/
-
 export const toggleLikePost = async (req, res) => {
   const { groupId, postId } = req.params;
   const userId = req.user.user._id.toString();
-  // console.log("toggleLikePost Controller: ", groupId, postId, userId);
+  console.log("toggleLikePost Controller: ", groupId, postId, userId);
 
   try {
-    // Zuerst das Dokument finden, um den aktuellen Like-Status zu prüfen
     const group = await GroupsModel.findById(groupId);
     if (!group) {
       return res.status(404).send("Group not found");
     }
 
     const post = group.groupPosts.id(postId);
-    // console.log("post", post);
     if (!post) {
       return res.status(404).send("Post not found");
     }
 
-    // Prüfen, ob der User den Post bereits geliked hat
     const likeIndex = post.likes.map((id) => id.toString()).indexOf(userId);
-    // console.log("likeIndex", likeIndex);
 
-    // Entsprechend hinzufügen oder entfernen
     const update =
       likeIndex === -1
-        ? { $addToSet: { "groupPosts.$[elem].likes": userId } } // Füge hinzu
-        : { $pull: { "groupPosts.$[elem].likes": userId } }; // Entferne
-    //console.log("update", update);
-    // console.log("postId", postId);
-    // Das Dokument mit der entsprechenden Operation aktualisieren
+        ? { $addToSet: { "groupPosts.$[elem].likes": userId } }
+        : { $pull: { "groupPosts.$[elem].likes": userId } };
+
     const updatedGroup = await GroupsModel.findByIdAndUpdate(groupId, update, {
       new: true,
       arrayFilters: [{ "elem._id": postId }],
-    });
+    }).populate("groupPosts.commenter", "userName image");
 
     if (!updatedGroup) {
       return res.status(404).send("Update failed");
     }
-    console.log("Updated Post:", post); // Nach dem Update
-    res.json(post);
+
+    const updatedPost = updatedGroup.groupPosts.id(postId);
+
+    res.json(updatedPost);
   } catch (error) {
     console.error("Failed to toggle like:", error);
     res.status(500).send("Internal Server Error");
