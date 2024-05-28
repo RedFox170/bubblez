@@ -1,29 +1,26 @@
-import { useState } from "react";
-import Avatar from "../../../public/avatar-placeholder.png";
-import { Link, useParams } from "react-router-dom";
+import { useContext, useState } from "react";
+import Avatar from "/public/avatar-placeholder.png";
+import { Link } from "react-router-dom";
+import { UserContext } from "../context/userContext";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
 
-const GroupPostCard = ({ post }) => {
+const PostCard = ({ post }) => {
   const [reply, setReply] = useState("");
-  const { groupId } = useParams();
-  const postId = post._id;
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState(post.comments || []);
-  const [likes, setLikes] = useState(post.likes || []);
-
-  const user = JSON.parse(localStorage.getItem("userData"));
-  const userId = user._id;
+  const [likes, setLikes] = useState(post.likes);
+  const { userData } = useContext(UserContext);
 
   const handleLikeClick = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5500/likePost/${groupId}/${postId}`,
+        `http://localhost:5500/likePost/${post._id}`,
         {
           method: "PUT",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: userId }),
+          body: JSON.stringify({ userId: userData._id }),
         }
       );
 
@@ -46,7 +43,7 @@ const GroupPostCard = ({ post }) => {
     if (reply.trim() !== "") {
       try {
         const response = await fetch(
-          `http://localhost:5500/addComment/${groupId}/${postId}`,
+          `http://localhost:5500/addComment/${post._id}`,
           {
             method: "POST",
             credentials: "include",
@@ -55,7 +52,7 @@ const GroupPostCard = ({ post }) => {
             },
             body: JSON.stringify({
               commentText: reply,
-              userId: userId,
+              userId: userData._id,
             }),
           }
         );
@@ -77,51 +74,40 @@ const GroupPostCard = ({ post }) => {
     setShowComments(!showComments);
   };
 
-  const formattedDate = new Date(post.postTime).toLocaleDateString("de-DE", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  const profilImg = () => (user.image ? user.image : Avatar);
+  const postUser = post.user || {};
 
   return (
     <div className="reusableBorder mt-4 p-4 flex flex-col w-full">
       <div className="flex justify-between items-center mb-4">
-        <Link
-          to={`/profile/${post.commenter._id}`}
-          className="flex items-center"
-        >
+        <Link to={`/profile/${postUser._id}`} className="flex items-center">
           <aside className="flex items-center">
             <img
-              src={profilImg()}
+              src={postUser.image || Avatar}
               alt="Profilbild"
               className="h-10 w-10 rounded-full"
             />
             <div className="text-base ml-4 font-semibold text-gray-900 dark:text-gray-100">
-              {post.commenter.userName}
+              {postUser.userName}
             </div>
           </aside>
         </Link>
-        <aside>{formattedDate}</aside>
+        <aside>
+          {formatDistanceToNow(new Date(post.createdAt), {
+            addSuffix: true,
+            locale: de,
+          })}
+        </aside>
       </div>
-
       {post.image && (
         <img
           src={post.image}
-          alt="Kommentarbild"
+          alt="Postbild"
           className="mb-4 w-full object-cover rounded-lg shadow-lg"
         />
       )}
-      <p className="mb-4 text-base font-semibold text-gray-900 dark:text-gray-100">
-        {post.title}
-      </p>
       <p className="mb-4 text-xl text-gray-700 dark:text-gray-400">
         {post.text}
       </p>
-
       <div className="flex justify-between items-center pt-4 border-t border-gray-200">
         <button
           type="button"
@@ -153,54 +139,48 @@ const GroupPostCard = ({ post }) => {
           Alle {comments.length} Kommentare anzeigen
         </button>
       </div>
-
       {showComments && (
         <div className="mt-2">
-          {comments.map((comment) => {
-            const commenter = comment.commenter;
-
-            return (
-              <div key={comment._id} className="mt-4 flex items-center">
-                <Link
-                  to={`/profile/${commenter._id}`}
-                  className="flex items-center"
-                >
-                  <img
-                    src={commenter?.image || Avatar}
-                    alt="Profilbild"
-                    className="h-10 w-10 rounded-full mr-4"
-                  />
-                </Link>
-                <div className="flex-grow">
-                  <div className="flex justify-between">
-                    <Link
-                      to={`/profile/${commenter._id}`}
-                      className="flex items-center"
-                    >
-                      <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                        {commenter
-                          ? `${commenter.userName}`
-                          : "Ehemaliger Nutzer"}{" "}
-                      </span>
-                    </Link>
-                    <span>
-                      {formatDistanceToNow(new Date(comment.commentTime), {
-                        addSuffix: true,
-                        locale: de,
-                      })}
+          {comments.map((comment) => (
+            <div key={comment._id} className="mt-4 flex items-center">
+              <Link
+                to={`/profile/${comment.user._id}`}
+                className="flex items-center"
+              >
+                <img
+                  src={comment.user?.image || Avatar}
+                  alt="Profilbild"
+                  className="h-10 w-10 rounded-full mr-4"
+                />
+              </Link>
+              <div className="flex-grow">
+                <div className="flex justify-between">
+                  <Link
+                    to={`/profile/${comment.user._id}`}
+                    className="flex items-center"
+                  >
+                    <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                      {comment.user
+                        ? `${comment.user.userName}`
+                        : "Ehemaliger Nutzer"}{" "}
                     </span>
-                  </div>
-                  <p>{comment.text}</p>
+                  </Link>
+                  <span>
+                    {formatDistanceToNow(new Date(comment.createdAt), {
+                      addSuffix: true,
+                      locale: de,
+                    })}
+                  </span>
                 </div>
+                <p>{comment.text}</p>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       )}
-
       <div className="mt-4 flex items-center w-full">
         <img
-          src={profilImg()}
+          src={userData.image || Avatar}
           alt="Profilbild"
           className="h-10 w-10 rounded-full"
         />
@@ -233,4 +213,4 @@ const GroupPostCard = ({ post }) => {
   );
 };
 
-export default GroupPostCard;
+export default PostCard;

@@ -9,7 +9,7 @@ const UserLogout = () => {
   const { setGroupsData } = useContext(GroupsContext);
   const { clearUsersData } = useContext(UsersContext);
   const navigate = useNavigate();
-
+  console.log("UserLogout.jsx");
   useEffect(() => {
     const logout = async () => {
       try {
@@ -19,6 +19,7 @@ const UserLogout = () => {
         });
 
         if (response.ok) {
+          console.log("Logout successful, clearing context and local storage");
           // Kontext-Daten leeren
           setGroupsData([]);
           clearUsersData();

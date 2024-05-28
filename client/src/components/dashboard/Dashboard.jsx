@@ -1,67 +1,81 @@
-import { Link } from "react-router-dom";
-import Carousel from "../landingpage/Carousel.jsx";
-import "./DashboardStyle.css";
-import Logo from "../assets/bubble_icon.png";
+// components/Dashboard.jsx
+import { useState, useEffect } from "react";
+import PostForm from "./PostForm";
+import PostList from "./PostList";
 
 const Dashboard = () => {
-  return (
-    <>
-      <section className="relative z-10">
-        <Carousel />
-      </section>
-      <section className="flex  justify-center h-full  w-full">
-        <div className="relative">
-          <Link
-            to="/groups"
-            className="reusableSquareDash absolute"
-            style={{ "--i": 5 }}
-          >
-            <div className="square-link text-center font-bold">
-              Meine Bubblez
-            </div>
-          </Link>
-          <Link
-            to="/feed"
-            className="reusableSquareDash absolute"
-            style={{ "--i": 6 }}
-          >
-            <div className="square-link text-center font-bold">Mein Feed</div>
-          </Link>
-          <Link
-            to="/market"
-            className="reusableSquareDash absolute"
-            style={{ "--i": 7 }}
-          >
-            <div className="square-link text-center font-bold">Marktplatz</div>
-          </Link>
-          <Link
-            to="/profile"
-            className="reusableSquareDash absolute"
-            style={{ "--i": 8 }}
-          >
-            <div className="square-link text-center font-bold">Mein Profil</div>
-          </Link>
-          <Link
-            to="/nachbarn-einladen"
-            className="reusableSquareDash absolute"
-            style={{ "--i": 9 }}
-          >
-            <div className="square-link text-center font-bold">
-              Freunde einladen
-            </div>
-          </Link>
-        </div>
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
 
-        <div className="container mt-64">
-          <div className="form flex flex-col items-center justify-center h-full">
-            <h2 className="text-3xl font-bold mb-4 text-gray-800 text-center">
-              Herzlich Willkommen bei Bubblez!
-            </h2>
-            <img src={Logo} className="h-40 self-center" alt="logo" />
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userRes = await fetch("http://localhost:5500/getUserData", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!userRes.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const userData = await userRes.json();
+        setUserData(userData);
+
+        const feedRes = await fetch("http://localhost:5500/feed", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!feedRes.ok) {
+          throw new Error("Failed to fetch feed");
+        }
+
+        const feedData = await feedRes.json();
+        setPosts(feedData);
+      } catch (error) {
+        setError(error.message);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    // Fehlerstatus überprüfen
+    return <p>Error: {error}</p>; // Fehlermeldung anzeigen
+  }
+
+  if (!userData) {
+    return <p>Failed to load user data.</p>;
+  }
+
+  return (
+    <section className="relative mt-20 flex flex-col min-h-screen">
+      <div className="reusableBlur w-full h-full overflow-auto min-h-screen">
+        <div className="mx-auto flex flex-col items-center w-full max-w-4xl">
+          <div className="reusableContainer w-full p-4">
+            <PostForm setPosts={setPosts} user={userData} />
           </div>
+          <PostList posts={posts} />
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
 

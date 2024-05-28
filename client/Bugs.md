@@ -5,6 +5,8 @@
 
 ### neue Baustellen
 - [ ] Like Button defekt
+- [ ] Feed sollte soweit klappen! Gruppenbeiträge werden noch nicht gerendert -> ich denke es liegt an der inkonsistenten schreibweise (groupsbeiträge sind anders als Post beiträge) | Beiträge werden doppelt gerendert
+- [x] Logout löscht die Cookies/LS nicht mehr (sieht so aus als würde er den token löschen und kurz danach ist es wieder da)
 
 ### ToDo
 - [x] Nachbarschaftszeug rausmachen, userSchema anpassen, MongoDB neu aufsetzten
