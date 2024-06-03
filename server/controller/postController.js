@@ -52,8 +52,12 @@ export const getPosts = async (req, res) => {
   try {
     const posts = await PostModel.find()
       .populate("user", "userName image")
-      .populate("comments.user", "userName image")
+      .populate({
+        path: "comments.user",
+        select: "userName image",
+      })
       .sort({ createdAt: -1 });
+    console.log("Fetched posts from DB:", posts);
     res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching posts", error });
@@ -77,7 +81,10 @@ export const addComment = async (req, res, next) => {
       postId,
       { $push: { comments: comment } },
       { new: true }
-    ).populate("comments.user", "userName image");
+    ).populate({
+      path: "comments.user",
+      select: "userName image",
+    });
 
     res.status(200).json(post);
   } catch (error) {

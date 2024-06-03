@@ -14,10 +14,12 @@ export const getFeed = async (req, res) => {
     console.log("userId im feedController", userId);
 
     // Eigene Beiträge
-    const ownPosts = await PostModel.find({ user: userId }).populate(
-      "user",
-      "userName image"
-    );
+    const ownPosts = await PostModel.find({ user: userId })
+      .populate("user", "userName image")
+      .populate({
+        path: "comments.user",
+        select: "userName image",
+      });
     console.log("ownPosts im feedController", ownPosts);
 
     // Beiträge von Freunden
@@ -27,7 +29,12 @@ export const getFeed = async (req, res) => {
     );
     const friendsPosts = await PostModel.find({
       user: { $in: user.followUsers },
-    }).populate("user", "userName image");
+    })
+      .populate("user", "userName image")
+      .populate({
+        path: "comments.user",
+        select: "userName image",
+      });
     console.log("friendsPosts im feedController", friendsPosts);
 
     // Beiträge aus Gruppen
@@ -35,7 +42,12 @@ export const getFeed = async (req, res) => {
     console.log("groups im feedController", groups);
     const groupPosts = await PostModel.find({
       user: { $in: groups.map((group) => group.members).flat() },
-    }).populate("user", "userName image");
+    })
+      .populate("user", "userName image")
+      .populate({
+        path: "comments.user",
+        select: "userName image",
+      });
     console.log("groupPosts im feedController", groupPosts);
 
     // Zusammenführen und sortieren
