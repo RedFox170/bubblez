@@ -2,46 +2,51 @@ import UserModell from "../models/userSchema.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "./jwtController.js";
 import jwt from "jsonwebtoken";
+import zxcvbn from "zxcvbn";
 
 /******************************************************
  *    registerController
  ******************************************************/
 
 export const registerController = async (req, res) => {
-  try {
-    const { email, password, confirmPassword, userName, followUsers, groups } =
-      req.body;
+  const { email, password, confirmPassword, userName } = req.body;
 
+  try {
     // Überprüfen, ob die E-Mail bereits existiert
     const existingUser = await UserModell.findOne({ email });
     if (existingUser) {
-      return res
-        .status(409)
-        .send({ message: "Email already exists. Please try again." });
+      return res.status(409).json({ message: "Email already exists." });
     }
 
     // Überprüfen, ob das Passwort und die Bestätigung übereinstimmen
     if (password !== confirmPassword) {
-      return res.status(400).send("Passwords do not match");
+      return res.status(400).json({ message: "Passwords do not match." });
+    }
+
+    // Überprüfen der Passwortstärke
+    const passwordStrength = zxcvbn(password);
+    if (passwordStrength.score < 3) {
+      // Die Skala reicht von 0 (sehr schwach) bis 4 (sehr stark)
+      return res.status(400).json({ message: "Password is too weak." });
     }
 
     // Passwort hashen
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Benutzer erstellen und in die Datenbank speichern
+    // Neuen Benutzer erstellen und speichern
     const newUser = await UserModell.create({
       email,
       userName,
       password: hashedPassword,
-      followUsers,
-      groups,
     });
 
-    // Erfolgreiche Antwort senden
-    res.status(201).send({ message: "User successfully registered" });
+    // Erfolgreiche Registrierung
+    res
+      .status(201)
+      .json({ message: "User successfully registered", user: newUser });
   } catch (error) {
     console.error("Registration failed.", error);
-    res.status(500).send({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -98,12 +103,97 @@ export const loginController = async (req, res, next) => {
 /******************************************************
  *    logoutController
  ******************************************************/
-//! muss hier noch ein JWT Token gelöscht werden?
 
-export const logoutController = async (req, res) => {
-  console.log("user ausgeloggt");
-  res.clearCookie("token");
-  res.status(200).send("cookie cleared. User logged out.");
+export const logoutController = (req, res) => {
+  console.log("User logged out");
+  res.clearCookie("token", {
+    path: "/", // Der gleiche Pfad wie beim Setzen des Cookies
+    httpOnly: true,
+    secure: true, // oder false, wenn nicht über HTTPS
+    sameSite: "Strict", // oder je nach Anforderung
+  });
+  console.log("User logged out");
+  res.status(200).json({ message: "Logged out successfully" });
+};
+
+/******************************************************
+ *    getUserData
+ ******************************************************/
+export const getUserData = async (req, res) => {
+  try {
+    const userId = req.user.user._id;
+    const user = await UserModell.findById(userId).populate("groups");
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+
+/******************************************************
+ *    getUserById (z.B. für Profilansicht)
+ ******************************************************/
+
+export const getUserById = async (req, res, next) => {
+  try {
+    const user = await UserModell.findById(req.params.id).populate(
+      "followUsers",
+      "userName image"
+    );
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+/******************************************************
+ *    addFriend
+ ******************************************************/
+
+export const addFriend = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res
+        .status(401)
+        .send("Authorization failed: JWT token not found in cookie");
+    }
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const currentUserId = decodedToken.user._id;
+
+    const friendId = req.params.id; // Beachte hier die Änderung
+
+    // Überprüfe, ob der Benutzer sich selbst als Freund hinzufügen möchte
+    if (currentUserId === friendId) {
+      return res.status(400).send("You cannot add yourself as a friend.");
+    }
+
+    // Finde den aktuellen Benutzer
+    const currentUser = await UserModell.findById(currentUserId);
+
+    // Überprüfe, ob der Benutzer bereits als Freund hinzugefügt wurde
+    if (currentUser.followUsers.includes(friendId)) {
+      return res.status(400).send("User is already in your friends list.");
+    }
+
+    // Füge den Freund zur Liste hinzu und speichere den Benutzer
+    currentUser.followUsers.push(friendId);
+    await currentUser.save();
+
+    res.status(200).send({
+      message: "Friend added successfully",
+      followUsers: currentUser.followUsers,
+    });
+  } catch (error) {
+    console.error("Error adding friend:", error);
+    res.status(500).send("Internal Server Error");
+  }
 };
 
 /******************************************************
@@ -113,28 +203,26 @@ export const logoutController = async (req, res) => {
 //! so kann nutzer sowie admin den controller verwenden
 
 export const editUser = async (req, res, next) => {
-  // "extrahiere" Adressdaten jeweils in eine Variable und den rest in ein "rest" Object
-  const { street, number, zip, ...rest } = req.body;
+  // Extrahiere die Felder aus dem req.body
+  const { city, firstName, aboutMe, image = null, ...rest } = req.body;
 
-  // Kopiere das rest Object in structureObj(=> das Object, das am Ende der DB übergeben werden soll)
+  // Kopiere das rest Object in structuredObj
   const structuredObj = { ...rest };
 
-  // Füge nur Adress-Angaben hinzu, die einen Wert haben
-
-  if (street) structuredObj["address.0.street"] = street;
-  if (number) structuredObj["address.0.number"] = number;
-  if (zip) structuredObj["address.0.zip"] = zip;
+  // Füge nur Felder hinzu, die einen Wert haben
+  if (city) structuredObj["city"] = city;
+  if (firstName) structuredObj["firstName"] = firstName;
+  if (aboutMe) structuredObj["aboutMe"] = aboutMe;
+  if (typeof image === "string") structuredObj["image"] = image; // Nur Strings zulassen
 
   // Null bedeutet löschen
-  if (street === null) structuredObj["address.0.street"] = "";
-  if (number === null) structuredObj["address.0.number"] = "";
-  if (zip === null) structuredObj["address.0.zip"] = "";
-
-  // console.log("structuredObj", structuredObj);
+  if (city === null) structuredObj["city"] = "";
+  if (firstName === null) structuredObj["firstName"] = "";
+  if (aboutMe === null) structuredObj["aboutMe"] = "";
+  if (image === null) structuredObj["image"] = ""; // Sicherstellen, dass es als String gesetzt wird
 
   try {
     const userId = req.params.id;
-    // console.log("body:", req.body);
     const options = { new: true };
 
     const user = await UserModell.findByIdAndUpdate(
@@ -142,9 +230,7 @@ export const editUser = async (req, res, next) => {
       { $set: structuredObj },
       options
     );
-    // console.log(user, userId);
 
-    // console.log("user nach findeIDAndUpdate", user);
     if (!user) {
       const error = new Error("User not found");
       error.statusCode = 404;

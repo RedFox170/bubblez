@@ -22,7 +22,6 @@ const Market = () => {
 
   //! BUG WARUM wird USEFFECT nicht ausgelöst
   useEffect(() => {
-    console.log("FЯ!ΞdℇM4ภภ");
     const getMarketItems = async () => {
       try {
         console.log("TEST TEST TEST TES TESTTT");
@@ -114,12 +113,6 @@ const Market = () => {
   // if(marketItems.length !== 0) {
   return (
     <section className="relative min-h-screen overflow-hidden flex justify-center items-center">
-      {/* Fest positionierter Hintergrund */}
-      <div className="absolute inset-0">
-        {/*   <div className="fixed reusableGlobalBackground "></div>
-        <div className="fixed reusableGlobalBackground "></div>
-        <div className=" fixed reusableGlobalBackground "></div> */}
-      </div>
       {/* Scrollbarer Inhalts-Container */}
       <div className="w-full h-full overflow-auto ">
         <div className="reusableContainer mx-auto flex flex-col items-center">
@@ -212,7 +205,7 @@ const Market = () => {
             </div>
             {/* //*____________________________________ */}
 
-            <div>
+            <div className="flex flex-wrap justify-center gap-4">
               <h3 className="reusableH3 text-xl font-semibold mb-4 pb-2 border-b-2 w-full px-4 py-2 mt-5">
                 WILLKOMMEN AUF DEM MARKTPLATZ
               </h3>
@@ -253,13 +246,3 @@ const Market = () => {
   );
 };
 export default Market;
-
-/* 
-wenn searchValue kein empty String -> map durch items -> includes?
-
-{searchValue && 
-  marketData.map(item, i) => {
-    item.title.includes(searchValue) ? <MarketCard key={i} /> : <Oops />
-  }
-}
-*/

@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
-import { GroupsContext } from "../context/groupsContext.jsx";
-import { useContext, useEffect, useState } from "react";
+// import { GroupsContext } from "../context/groupsContext.jsx";
+import { useEffect, useState } from "react";
 import groupPlaceholderImg from "../assets/groupPlaceholder.jpg";
 import { Modal } from "../mainComponents/createPost-Components/Modal.jsx";
 import GroupPostCard from "./GroupPostCard.jsx";
@@ -14,60 +14,90 @@ const GroupComponent = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { groupsData, isLoading } = useContext(GroupsContext);
-
-  // Die Logik zum Finden deiner Gruppe basierend auf `groupId`
-  const group = groupsData.find((group) => group._id === groupId);
-  // console.log("group in GroupComponent", group);
+  const [selectedGroup, setSelectedGroup] = useState(null);
   const [groupPosts, setGroupPosts] = useState([]);
 
-  useEffect(() => {
-    if (group && group.groupPosts) {
-      setGroupPosts(group.groupPosts);
+  /******************************************************
+   *    groupsData laden
+   ******************************************************/
+
+  const fetchGroupData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5500/getGroupDetails/${groupId}`,
+        {
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setSelectedGroup(data);
+        setGroupPosts(data.groupPosts || []);
+        console.log("Abruf der Gruppe:", data);
+        console.log("Gruppen-Posts:", data.groupPosts || []);
+      } else {
+        console.error("Fehler beim Laden der Gruppe:", await response.text());
+      }
+    } catch (error) {
+      console.error("Fehler beim Laden der Gruppe:", error);
     }
-  }, [group]);
+  };
 
-  //userdaten für das ProfilBild
-  const user = JSON.parse(localStorage.getItem("userData"));
-
-  /******************************************************
-   *    damit beim Betreten der Gruppe oben angezeigt wird und nicht irgendwo die mitte
-   ******************************************************/
+  // Hole die Daten für die Gruppe beim erstmaligen Laden der Komponente
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    fetchGroupData();
+  }, [groupId]);
 
-  /******************************************************
-   *    useEffect für setGroupPosts
-   ******************************************************/
-
-  useEffect(() => {}, [groupPosts]);
+  if (!selectedGroup) {
+    return <div>Lädt die Gruppe...</div>;
+  }
 
   /* *****************************************************
    *    Gruppenkommentare laden (funzt eventuell garnicht?!)
    ******************************************************/
-  if (isLoading) {
+  /*  if (isLoading) {
     return <div>Lädt...</div>; // Zeige eine Ladeanzeige
   }
 
   if (!groupsData) {
-    return <div>Keine Daten verfügbar.</div>; // Fallback, falls keine Daten geladen werden konnten
+    return <div>Keine Daten verfügbar.</div>;
   }
 
   const {
-    /* title, text, admins, mods, members, privateGroup, comments,  */ image,
+     image
   } = group;
+ */
 
   /******************************************************
    *    img
    ******************************************************/
   // ! Cloudenary Anbindung fehlt noch
   const groupImg = () => {
-    if (image === "") {
+    if (selectedGroup.image === "") {
       return groupPlaceholderImg;
     } else {
-      return image;
+      return selectedGroup.image;
     }
+  };
+
+  /******************************************************
+   *    Formatierte Listen
+   ******************************************************/
+
+  const formatUserList = (users) => {
+    if (!Array.isArray(users) || users.length === 0) {
+      return "Keine Benutzer vorhanden";
+    }
+
+    // Für jeden Benutzer ein eigenes JSX-Element zurückgeben
+    return users.map((user, index) => (
+      <span key={user._id}>
+        <Link to={`/profile/${user._id}`} key={user.id} className="user-link">
+          {user.userName}
+        </Link>
+        {index < users.length - 1 && ", "}
+      </span>
+    ));
   };
 
   /******************************************************
@@ -86,40 +116,21 @@ const GroupComponent = () => {
     console.log("menuOpen", menuOpen);
   };
 
-  /******************************************************
+  /*   *****************************************************
    *    mods, Admins und Members Namen formatieren
    ******************************************************/
-  const formatNamesList = (users) => {
-    // Überprüfe, ob das übergebene Array gültig ist
-    if (!Array.isArray(users) || users.length === 0) {
-      return "Keine Benutzer vorhanden";
-    }
-
-    // Gehe durch jedes Benutzerobjekt im Array und formatiere den Namen
-    const formattedNames = users.map((user) => {
-      // Extrahiere den Vornamen und den ersten Buchstaben des Nachnamens
-      const firstName = user.firstName || "";
-      const lastNameInitial = user.lastName
-        ? user.lastName.charAt(0) + "."
-        : "";
-      return `${firstName} ${lastNameInitial}`;
-    });
-
-    // Verbinde die formatierten Namen zu einem String
-    return formattedNames.join(", ");
-  };
 
   /******************************************************
    *    privateGroup
    ******************************************************/
-  const isPrivate = () => {
+  /*   const isPrivate = () => {
     const status = group.privateGroup;
     if (status) {
       return "Private Gruppe";
     } else {
       return "Öffentliche Gruppe";
     }
-  };
+  }; */
 
   /******************************************************
    *    Modal (create Post in extra Fenster anzeigen)
@@ -131,13 +142,13 @@ const GroupComponent = () => {
   /******************************************************
    *    Profilpic
    ******************************************************/
-  const profilImg = () => {
+  /*   const profilImg = () => {
     if (user.image === undefined || null) {
       return Avatar;
     } else {
       return user.image;
     }
-  };
+  }; */
 
   /******************************************************
    *    Gruppe verlassen
@@ -192,7 +203,7 @@ const GroupComponent = () => {
           {/* Verwendung der reusableContainer Klasse für den Glassmorphismus-Stil */}
           <div className="reusableContainer  max-w-4xl ">
             <h3 className="reusableH3 text-xl font-semibold mb-4 pb-2 border-b-2 w-full px-4 py-2 mt-5">
-              {group.title}
+              {selectedGroup.title}
             </h3>
             <img
               src={groupImg()}
@@ -224,22 +235,22 @@ const GroupComponent = () => {
             {showDetails && (
               <div className="space-y-2">
                 <p className="bg-white bg-opacity-50 text-center  p-4 rounded-lg shadow-lg">
-                  {group.text}
+                  {selectedGroup.text}
                 </p>
 
-                {showDetails && (
+                {showDetails && selectedGroup && (
                   <div className="space-y-4 mt-4">
                     <div className="bg-white bg-opacity-10 p-1 rounded-lg shadow">
                       <h4 className="text-lg font-semibold mb-1">Admins</h4>
-                      <p>{formatNamesList(group.admins)}</p>
+                      <div>{formatUserList(selectedGroup.admins)}</div>
                     </div>
                     <div className="bg-white bg-opacity-10 p-1 rounded-lg shadow">
                       <h4 className="text-lg font-semibold mb-1">Mods</h4>
-                      <p>{formatNamesList(group.mods)}</p>
+                      <div>{formatUserList(selectedGroup.mods)}</div>
                     </div>
                     <div className="bg-white bg-opacity-10 p-1 rounded-lg shadow">
                       <h4 className="text-lg font-semibold mb-1">Mitglieder</h4>
-                      <p>{formatNamesList(group.members)}</p>
+                      <div>{formatUserList(selectedGroup.members)}</div>
                     </div>
                   </div>
                 )}
@@ -274,8 +285,7 @@ const GroupComponent = () => {
 
             {/* Tags und Privatsphäre-Status */}
             <div className="p-2 flex justify-between">
-              <span>{isPrivate()}</span>
-              <span>{group.tags}</span>
+              <span>{selectedGroup.tags}</span>
             </div>
           </div>
         </div>
@@ -284,7 +294,7 @@ const GroupComponent = () => {
         <section onClick={openModal} className=" my-4">
           <div className="reusableHeaderBar mx-auto max-w-3xl p-4 bg-white bg-opacity-10 backdrop-blur-lg rounded-lg shadow-lg flex items-center space-x-4">
             <img
-              src={profilImg()}
+              src={Avatar}
               alt="Profilbild Nutzer"
               className="rounded-full w-14 h-14 object-cover"
             />

@@ -1,307 +1,188 @@
-import { useContext, useState } from "react";
-import {
-  inputStyle,
-  labelStyle,
-  trashButton,
-} from "../reuseable/styles/reuseableComponents.jsx";
-import { UserContext } from "../context/userContext.jsx";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import Avatar from "/avatar-icon.jpg";
 
-const UpdateProfile = () => {
-  const { userData, setUserData } = useContext(UserContext);
-  const [uploadImg, setUploadImg] = useState(null);
+const Profile = () => {
+  const { userId } = useParams();
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // image Upload
-  function handleImageUpload(event) {
-    const file = event.target.files[0]; // Get the selected file
-    const reader = new FileReader(); // Create a file reader object
-
-    // Define a callback function to be executed when file reading is complete
-    reader.onloadend = () => {
-      // Convert the image file to a base64 string
-      const imageData = reader.result;
-      // Update the state with the base64 string representing the uploaded image
-      setUploadImg(imageData);
+  /******************************************************
+   *    fetchUserData
+   ******************************************************/
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await fetch(`http://localhost:5500/users/${userId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const data = await res.json();
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    if (file) {
-      // Start reading the file as a data URL
-      reader.readAsDataURL(file);
-    }
-  }
+    fetchUserData();
+  }, [userId]);
 
-  /* function handleButtonClick() {
-    // Trigger the file input click event programmatically
-    document.getElementById("image").click();
-  }
-  function handleDeleteImage() {
-    // Reset the uploaded image state
-    setUploadImg(null);
-  } */
+  /******************************************************
+   *    freunde hinzufügen
+   ******************************************************/
 
-  // Trash symbol
-  const trash = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-      />
-    </svg>
-  );
-
-  // Function to handle delete form field
-  const onDelete = async (fieldName) => {
-    console.log("fieldName:", fieldName);
-
+  const addFriend = async () => {
     try {
-      const res = await fetch(`http://localhost:5500/edit/${userData._id}`, {
-        method: "PATCH",
+      const res = await fetch(`http://localhost:5500/addFriend/${userId}`, {
+        method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
-        body: JSON.stringify({
-          [fieldName]: null,
-        }),
       });
-      const data = await res.json();
-      setUserData(data.user);
-      alert("Removed successfully!");
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // Function to handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const formDataProps = Object.fromEntries(formData);
-    // console.log(formDataProps);
-    const updatedData = {};
-    for (let nameAttr in formDataProps) {
-      // console.log(nameAttr);
-      if (formDataProps[nameAttr] !== "") {
-        updatedData[nameAttr] = formDataProps[nameAttr];
+      if (!res.ok) {
+        throw new Error("Failed to add friend");
       }
-    }
-
-    console.log("updatedData:", updatedData);
-
-    try {
-      const res = await fetch(`http://localhost:5500/edit/${userData._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          ...updatedData,
-        }),
-      });
       const data = await res.json();
-      setUserData(data.user);
-      alert("Profile updated successfully!");
-      window.location.reload();
+      console.log("Friend added:", data);
+      // Aktualisiere den Benutzerzustand oder zeige eine Erfolgsmeldung an
     } catch (error) {
-      console.log(error);
+      console.error("Error adding friend:", error);
     }
   };
+
+  /******************************************************
+   *    Profilbild
+   ******************************************************/
+  const profilImg = () => {
+    if (!userData?.image) {
+      return Avatar;
+    } else {
+      return userData.image;
+    }
+  };
+
+  /******************************************************
+   *    Formatierte Listen
+   ******************************************************/
+
+  const formatUserList = (users) => {
+    if (!Array.isArray(users) || users.length === 0) {
+      return "Keine Benutzer vorhanden";
+    }
+
+    // Für jeden Benutzer ein eigenes JSX-Element zurückgeben
+    return users.map((user, index) => (
+      <span key={user._id}>
+        <Link to={`/profile/${user._id}`} key={user.id} className="user-link">
+          {user.userName}
+        </Link>
+        {index < users.length - 1 && ", "}
+      </span>
+    ));
+  };
+
+  /******************************************************
+   *    Datum Formatieren
+   ******************************************************/
+
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!userData) {
+    return <p>Benutzerdaten konnten nicht geladen werden.</p>;
+  }
+
+  /******************************************************
+   *  Return
+   ******************************************************/
 
   return (
-    <section className="flex justify-center  min-h-screen w-full">
-      <div className="relative">
-        <div className="reusableSquare absolute" style={{ "--i": 0 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 1 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 2 }}></div>
-        {/*  <div className="reusableSquare absolute" style={{ "--i": 3 }}></div> */}
-        {/* <div className="reusableSquare absolute" style={{ "--i": 4 }}></div> */}
-        <div className="reusableContainer  mt-12 shadow-md">
-          <form className="reusableForm" onSubmit={handleSubmit}>
-            <div className="profile-image-upload ">
-              {uploadImg ? (
-                <div className="image-preview flex justify-center ">
-                  <img
-                    src={uploadImg}
-                    alt="Profile "
-                    className="w-[200px] h-[200px] object-cover rounded-full mx-auto"
-                  />
-                  <button
-                    onClick={handleDeleteImage}
-                    className="delete-image-button"
-                  >
-                    🗑️
-                  </button>
-                </div>
-              ) : (
-                <div className="image-placeholder ">
-                  <img
-                    src="../avatar-icon.jpg"
-                    alt="Placeholder"
-                    className="w-[200px] h-[200px] object-cover rounded-full mx-auto"
-                  />
-                </div>
-              )}
-              <label
-                htmlFor="image"
-                className="file-input-label block text-center mt-4"
-              >
-                <input
-                  type="file"
-                  id="image"
-                  name="image"
-                  onChange={handleImageUpload}
-                  className="file-input hidden"
-                />
-                <span className="reusableFormBtn mt-2">Bild wählen</span>
-              </label>
-            </div>
-            <h3 className="reusableH3 m-2 ">Hi {userData.firstName},</h3>
-            <textarea
-              name="aboutMe"
-              id="aboutMe"
-              cols="30"
-              rows="5"
-              placeholder="Hier kannst du dich mit deinen eigenen Worten vorstellen."
-              defaultValue={userData.aboutMe || ""}
-              className="about-me-textarea"
-            ></textarea>
-            {/* <div>
-            <label htmlFor="groups">Groups:</label>
-            <select
-              multiple
-              value={userData.groups}
-              // onChange={handleSelectChange}
-              id="groups"
-              name="groups"
-            >
-              
-              {userData.groups}
-            </select>
-          </div> */}
-            <div className="relative">
-              <label htmlFor="firstName" className={labelStyle}>
-                firstName:
-                <button
-                  type="button"
-                  className={trashButton}
-                  onClick={() => onDelete("firstName")}
-                >
-                  {trash}
-                </button>
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                placeholder={userData.firstName}
-                className={inputStyle}
-              />
-            </div>
-            <div className="relative">
-              <label htmlFor="lastName" className={labelStyle}>
-                lastName:
-                <button
-                  type="button"
-                  className={trashButton}
-                  onClick={() => onDelete("lastName")}
-                >
-                  {trash}
-                </button>
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                placeholder={userData.lastName}
-                className={inputStyle}
-              />
-            </div>
-            <div className="relative">
-              <label htmlFor="email" className={labelStyle}>
-                Email:
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder={userData.email}
-                className={inputStyle}
-              />
-            </div>
-            <div className="relative">
-              <label htmlFor="street" className={labelStyle}>
-                Street:
-                <button
-                  type="button"
-                  className={trashButton}
-                  onClick={() => onDelete("street")}
-                >
-                  {trash}
-                </button>
-              </label>
-              <input
-                type="text"
-                id="street"
-                name="street"
-                placeholder={userData.address[0].street}
-                className={inputStyle}
-              />
-            </div>
-            <div className="relative">
-              <label htmlFor="number" className={labelStyle}>
-                Number:
-                <button
-                  type="button"
-                  className={trashButton}
-                  onClick={() => onDelete("number")}
-                >
-                  {trash}
-                </button>
-              </label>
-              <input
-                type="text"
-                id="number"
-                name="number"
-                placeholder={userData.address[0].number}
-                className={inputStyle}
-              />
-            </div>
-            <div className="relative">
-              <label htmlFor="zip" className={labelStyle}>
-                ZIP:
-                <button
-                  type="button"
-                  className={trashButton}
-                  onClick={() => onDelete("zip")}
-                >
-                  {trash}
-                </button>
-              </label>
-              <input
-                type="text"
-                id="zip"
-                name="zip"
-                placeholder={userData.address[0].zip}
-                className={inputStyle}
-              />
-            </div>
-            {/* Add other form fields as needed */}
-            <button type="submit" className="reusableFormBtn mt-2">
-              Update Profile
-            </button>
-          </form>
+    <section className="flex justify-center min-h-screen w-full p-4">
+      <div className="relative w-full max-w-4xl bg-white shadow-md p-6 rounded-lg">
+        <div className="col-span-full flex flex-col items-center mb-6">
+          <div className="profile-image mb-4">
+            <img
+              src={profilImg()}
+              alt="Profile"
+              className="w-[150px] h-[150px] object-cover rounded-full"
+            />
+          </div>
+          <h3 className="text-2xl font-bold">{userData.userName}</h3>
+          <p className="text-gray-600">{userData.firstName}</p>
+        </div>
+        <div>
+          <button onClick={addFriend}>Adden</button>
+          <button>Nachricht senden</button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-1 col-span-full">
+            <h4 className="block text-gray-700 font-bold mb-1">Geburtstag:</h4>
+            <p className="border rounded-md p-2 bg-gray-50">
+              {userData.birthday
+                ? formatDate(userData.birthday)
+                : "Nicht angegeben"}
+            </p>
+          </div>
+          <div className="md:col-span-1 col-span-full">
+            <h4 className="block text-gray-700 font-bold mb-1">Crew:</h4>
+            <p className="border rounded-md p-2 bg-gray-50">
+              {userData.crew || "Nicht angegeben"}
+            </p>
+          </div>
+          <div className="md:col-span-1 col-span-full">
+            <h4 className="block text-gray-700 font-bold mb-1">Stadt:</h4>
+            <p className="border rounded-md p-2 bg-gray-50">
+              {userData.city || "Nicht angegeben"}
+            </p>
+          </div>
+          <div className="md:col-span-1 col-span-full">
+            <h4 className="block text-gray-700 font-bold mb-1">Interessen:</h4>
+            <p className="border rounded-md p-2 bg-gray-50">
+              {userData.interests || "Nicht angegeben"}
+            </p>
+          </div>
+          <div className="md:col-span-1 col-span-full">
+            <h4 className="block text-gray-700 font-bold mb-1">
+              Familienstand:
+            </h4>
+            <p className="border rounded-md p-2 bg-gray-50">
+              {userData.familyStatus || "Nicht angegeben"}
+            </p>
+          </div>
+          <div className="col-span-full">
+            <h4 className="block text-gray-700 font-bold mb-1">Über mich:</h4>
+            <p className="border rounded-md p-2 bg-gray-50">
+              {userData.aboutMe || "Nicht angegeben"}
+            </p>
+          </div>
+          <div className="col-span-full">
+            <h4 className="block text-gray-700 font-bold mb-1">Freunde:</h4>
+            <p className="border rounded-md p-2 bg-gray-50">
+              {userData.followUsers.length > 0
+                ? formatUserList(userData.followUsers)
+                : "Noch keine Freunde geaddet."}
+            </p>
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-export default UpdateProfile;
+export default Profile;

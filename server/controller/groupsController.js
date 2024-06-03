@@ -85,6 +85,29 @@ export const createGroup = async (req, res, next) => {
 };
 
 /******************************************************
+ *    getGroupDetails - Userdaten laden um Namen etc anzuzeigen
+ ******************************************************/
+
+export const getGroupDetails = async (req, res) => {
+  try {
+    const groupId = req.params.id;
+
+    const group = await GroupsModel.findById(groupId)
+      .populate("members", "userName image") // oder alle relevanten Felder, die du brauchst
+      .populate("mods", "userName image")
+      .populate("admins", "userName image")
+      .populate("groupPosts.commenter", "userName image")
+      .populate("groupPosts.comments.commenter", "userName image");
+    res.status(200).json(group);
+  } catch (error) {
+    res.status(500).json({
+      message: "Fehler beim Abrufen der Gruppendetails",
+      error: error.message,
+    });
+  }
+};
+
+/******************************************************
  *    getAllGroups
  ******************************************************/
 
@@ -304,7 +327,7 @@ export const followGroup = async (req, res) => {
 };
 
 /******************************************************
- *   unfollowGroup (entfernt Benutzer aus Gruppe und Gruppe aus Benutzer)
+ *   unfollowGroup (entfernt Benutzer aus Gruppe und Gruppe aus Benutzer DB)
  ******************************************************/
 
 export const unfollowGroup = async (req, res) => {
@@ -318,7 +341,7 @@ export const unfollowGroup = async (req, res) => {
       members: userId,
     });
 
-    console.log("group in unfollowGroup Controller", group);
+    console.log("Group found:", group);
 
     if (!group) {
       return res
@@ -327,14 +350,18 @@ export const unfollowGroup = async (req, res) => {
     }
 
     // Benutzer aus der Gruppe entfernen
-    await GroupsModel.findByIdAndUpdate(groupId, {
+    const updateGroupResult = await GroupsModel.findByIdAndUpdate(groupId, {
       $pull: { members: userId },
     });
 
+    console.log("Update group result:", updateGroupResult);
+
     // Gruppe aus der Liste der Gruppen des Benutzers entfernen
-    await UserModell.findByIdAndUpdate(userId, {
-      $pull: { groups: { groupId: groupId } },
+    const updateUserResult = await UserModell.findByIdAndUpdate(userId, {
+      $pull: { groups: groupId },
     });
+
+    console.log("Update user result:", updateUserResult);
 
     return res
       .status(200)
@@ -348,15 +375,13 @@ export const unfollowGroup = async (req, res) => {
 /******************************************************
  *   createGroupPost
  ******************************************************/
-//! Checken ob der GroupsRouter createGroupPost richtig angeschlossen ist
 
 export const createGroupPost = async (req, res, next) => {
   const groupId = req.params.id;
-
   const { title, text, topic, image } = req.body;
-  console.log(req.body);
+
   try {
-    // Authentifizierung und Autorisierung (wie bereits in deinem Code)
+    // Authentifizierung
     const token = req.cookies.token;
     if (!token) {
       const error = new Error(
@@ -368,43 +393,41 @@ export const createGroupPost = async (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const user = decodedToken.user;
     const creatorId = user._id;
-    console.log(user);
-    console.log(creatorId);
+
     // Finde die Gruppe anhand ihrer ID und füge den neuen Beitrag hinzu
     const group = await GroupsModel.findById(groupId);
     if (!group) {
       return res.status(404).send({ message: "Gruppe nicht gefunden." });
     }
 
-    // Erstelle ein neues Post-Objekt für groupPosts
+    // Erstelle ein neues Post-Objekt
     const newPost = {
       title,
       text,
       topic,
-      image, // das Bild später hinzufügen
+      image,
       commenter: creatorId, // Ersteller des Beitrags
-      postTime: new Date(), // Erstellungsdatum speichern
+      postTime: new Date(),
     };
-    console.log("createGroupPost newPost kurz vorm Senden", newPost);
-    // Füge den neuen Beitrag zu groupPosts hinzu und speichere die Gruppe
+
+    // Füge den neuen Beitrag zu `groupPosts` hinzu
     group.groupPosts.push(newPost);
     await group.save();
 
-    // Sende eine Erfolgsantwort zurück mit dem gespeicherten Post-Objekt
-    const savedGroup = await group.save();
-    const savedPost = savedGroup.groupPosts[savedGroup.groupPosts.length - 1]; // Der zuletzt hinzugefügte Post
-    console.log("savedPost", savedPost);
+    // Hole den zuletzt hinzugefügten Beitrag und erweitere ihn um die Kommentatorinformationen
+    const savedPostId = group.groupPosts[group.groupPosts.length - 1]._id;
+    const populatedGroup = await GroupsModel.findById(groupId).populate(
+      "groupPosts.commenter",
+      "userName image"
+    );
+    const populatedPost = populatedGroup.groupPosts.find(
+      (post) => post._id.toString() === savedPostId.toString()
+    );
 
-    const newPostId = savedPost._id;
-    console.log("newPostId", newPostId);
-
-    // Extrahiere die ID des neu erstellten Posts
-    /*   const newPostId = group.groupPosts[group.groupPosts.length - 1]._id; */
-
+    // Sende den Beitrag inklusive der Kommentatorinformationen
     res.status(201).send({
       message: "Beitrag erfolgreich erstellt.",
-      post: savedPost,
-      postId: newPostId,
+      post: populatedPost,
     });
   } catch (error) {
     next(error);
@@ -414,52 +437,47 @@ export const createGroupPost = async (req, res, next) => {
 /******************************************************
  *   toggleLikePost (GruppenPosts liken)
  ******************************************************/
-
 export const toggleLikePost = async (req, res) => {
   const { groupId, postId } = req.params;
   const userId = req.user.user._id.toString();
-  // console.log("toggleLikePost Controller: ", groupId, postId, userId);
+  console.log("toggleLikePost Controller: ", groupId, postId, userId);
 
   try {
-    // Zuerst das Dokument finden, um den aktuellen Like-Status zu prüfen
     const group = await GroupsModel.findById(groupId);
     if (!group) {
       return res.status(404).send("Group not found");
     }
 
     const post = group.groupPosts.id(postId);
-    // console.log("post", post);
     if (!post) {
       return res.status(404).send("Post not found");
     }
 
-    // Prüfen, ob der User den Post bereits geliked hat
     const likeIndex = post.likes.map((id) => id.toString()).indexOf(userId);
-    // console.log("likeIndex", likeIndex);
 
-    // Entsprechend hinzufügen oder entfernen
     const update =
       likeIndex === -1
-        ? { $addToSet: { "groupPosts.$[elem].likes": userId } } // Füge hinzu
-        : { $pull: { "groupPosts.$[elem].likes": userId } }; // Entferne
-    //console.log("update", update);
-    // console.log("postId", postId);
-    // Das Dokument mit der entsprechenden Operation aktualisieren
+        ? { $addToSet: { "groupPosts.$[elem].likes": userId } }
+        : { $pull: { "groupPosts.$[elem].likes": userId } };
+
     const updatedGroup = await GroupsModel.findByIdAndUpdate(groupId, update, {
       new: true,
       arrayFilters: [{ "elem._id": postId }],
-    });
+    }).populate("groupPosts.commenter", "userName image");
 
     if (!updatedGroup) {
       return res.status(404).send("Update failed");
     }
-    console.log("Updated Post:", post); // Nach dem Update
-    res.json(post);
+
+    const updatedPost = updatedGroup.groupPosts.id(postId);
+
+    res.json(updatedPost);
   } catch (error) {
     console.error("Failed to toggle like:", error);
     res.status(500).send("Internal Server Error");
   }
 };
+
 /******************************************************
  *   addCommentToPost  (Antworten auf Kommentare)
  ******************************************************/
@@ -494,8 +512,19 @@ export const createGroupPostComment = async (req, res) => {
     // Das aktualisierte Gruppendokument speichern
     await group.save();
 
-    // Erfolgreiche Antwort zurücksenden mit dem aktualisierten Post
-    res.status(201).json(post);
+    // Um sicherzustellen, dass der neu hinzugefügte Kommentar korrekt bevölkert wird
+    const populatedPost = await GroupsModel.findById(groupId)
+      .populate({
+        path: "groupPosts.comments.commenter",
+        select: "userName image",
+      })
+      .then((group) => group.groupPosts.id(postId));
+
+    // Beispiel für detailliertes Logging des Kommentator-Objekts
+    console.log(JSON.stringify(populatedPost, null, 2));
+
+    // Sende eine Erfolgsantwort zurück mit dem aktualisierten und bevölkerten Post
+    res.status(201).json(populatedPost);
   } catch (error) {
     console.error("Error adding comment to post:", error);
     res.status(500).send("Internal Server Error");

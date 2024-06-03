@@ -7,32 +7,27 @@ const GroupCard = ({ group }) => {
   const { title, text, image, privateGroup, members, mods, admins } = group;
   const { userData, setUserData } = useContext(UserContext);
   const userId = userData._id;
-  const [groupId, setGroupId] = useState("");
+  const [groupId, setGroupId] = useState(group._id);
 
   useEffect(() => {
     console.log("groupID UE", groupId);
   }, [groupId]);
 
-  const updateGroupId = () => {
-    setGroupId(group._id);
-  };
   /******************************************************
    *    Berechnung Anzahl der Gruppenmitglieder
    ******************************************************/
   const countGroupMembers = () => {
-    // Zähle Länge jedes Arrays
     const numMembers = members ? members.length : 0;
     const numMods = mods ? mods.length : 0;
     const numAdmins = admins ? admins.length : 0;
 
-    // Berechne die Gesamtzahl der Gruppenmitglieder
     const total = numMembers + numMods + numAdmins;
 
     return total;
   };
 
   /******************************************************
-   *    überprüfung ob User mitglied der Gruppe ist
+   *    Überprüfung ob User Mitglied der Gruppe ist
    ******************************************************/
   const isMember = () => {
     const isMember = Array.isArray(members) && members.includes(userId);
@@ -43,9 +38,8 @@ const GroupCard = ({ group }) => {
   };
 
   /******************************************************
-   *    Wenn kein bild hinterlegt wurde -> Platzhalter nutzen
+   *    Wenn kein Bild hinterlegt wurde -> Platzhalter nutzen
    ******************************************************/
-  //! muss an Cloudinary angeschlossen werden
   const groupImage = () => {
     if (!image) {
       return groupPlaceholderImg;
@@ -69,6 +63,10 @@ const GroupCard = ({ group }) => {
    *    Gruppe Beitreten Button
    ******************************************************/
   const joinGroupBtnHandler = async () => {
+    if (!groupId) {
+      setGroupId(group._id);
+    }
+
     try {
       const response = await fetch(
         `http://localhost:5500/followGroup/${groupId}`,
@@ -93,7 +91,7 @@ const GroupCard = ({ group }) => {
 
   return (
     <li key={title} className="reusableBorder  mt-4 p-2 flex flex-col w-full">
-      <div onClick={updateGroupId} className=" flex w-full">
+      <div className="flex w-full">
         {/* Linke Seite */}
         <div className="flex-none w-1/4 mr-4">
           <Link to={`/groupsCompo/${group._id}`}>
@@ -113,7 +111,6 @@ const GroupCard = ({ group }) => {
         <aside className="flex-none" style={{ flexBasis: "15%" }}>
           {isMember() ? (
             /* Häkchen Icon */
-
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

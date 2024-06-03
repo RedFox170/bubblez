@@ -5,7 +5,8 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 // import session from "express-session";
 import userRouter from "./routes/userRouter.js";
-import newsRouter from "./routes/newsRouter.js";
+import feedRouter from "./routes/feedRouter.js";
+import postRouter from "./routes/postRouter.js";
 import groupsRouter from "./routes/groupsRouter.js";
 import marketRouter from "./routes/marketRouter.js";
 import dotenv from "dotenv";
@@ -51,7 +52,8 @@ app.use(express.json({ limit: "1mb" }));
  * ******************************************************/
 
 app.use("/", userRouter);
-app.use("/", newsRouter);
+app.use("/", feedRouter);
+app.use("/", postRouter);
 app.use("/", groupsRouter);
 app.use("/", marketRouter);
 app.use("/", usersRouter);

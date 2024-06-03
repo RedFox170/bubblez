@@ -6,19 +6,19 @@ import "./index.css";
 import UserRegister from "./components/user/UserRegister.jsx";
 import UserLogin from "./components/user/UserLogin.jsx";
 import UserLogout from "./components/user/UserLogout.jsx";
-import Neighbours from "./components/Neighbours.jsx";
+
 import Home from "./components/landingpage/Home.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { UserProvider } from "./components/context/userContext.jsx";
 import { UsersProvider } from "./components/context/usersContext.jsx";
 import { ThemeProvider } from "./components/context/ThemeContext.jsx";
 import { GroupsProvider } from "./components/context/groupsContext.jsx";
-import Profile from "./components/user/Profile.jsx";
+import UpdateProfile from "./components/user/UpdateProfile.jsx";
 import GroupForm from "./components/group/groupForm.jsx";
 import GroupOverview from "./components/group/GroupOverview.jsx";
 import GroupComponent from "./components/group/GroupComponent.jsx";
 import Market from "./components/Market/Market.jsx";
-
+import Profile from "./components/user/Profile.jsx";
 import MarketForm from "./components/Market/MarketForm.jsx";
 import Dashboard from "./components/dashboard/Dashboard.jsx";
 import { MarketProvider } from "./components/context/marketContext.jsx";
@@ -51,14 +51,14 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "profile",
+        path: "updateprofile",
+        element: <UpdateProfile />,
+      },
+      {
+        path: "profile/:userId",
         element: <Profile />,
       },
 
-      {
-        path: "neighbours",
-        element: <Neighbours />,
-      },
       {
         path: "groupsForm",
         element: <GroupForm />,

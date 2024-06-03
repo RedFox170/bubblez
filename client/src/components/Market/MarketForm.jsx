@@ -25,7 +25,6 @@ const MarketForm = () => {
     price: "",
     image: "",
     tags: "",
-    zip: userData.address[0].zip,
     offerType: "", //~ Verkaufen, verschenken  etc
   });
 
@@ -36,7 +35,6 @@ const MarketForm = () => {
   //! Cloudinary
   useEffect(() => {
     formData.image = uploadImg;
-    console.log(uploadImg);
   }, [uploadImg]);
 
   // alle Input Felder
@@ -71,11 +69,6 @@ const MarketForm = () => {
       price: value,
     }));
   };
-
-  // const handleImageUpload = () => {
-  //   // Hier  Bild-Upload-Logik hinzufügen
-  //   console.log("Bild hochgeladen");
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -153,7 +146,7 @@ const MarketForm = () => {
           <form onSubmit={handleSubmit}>
             <div>
               <h2 className="text-xl font-bold mb-4 text-gray-800">
-                🛍️ Erstelle neues Angebot:
+                Erstelle neues Angebot:
               </h2>
 
               <div className="mb-4">

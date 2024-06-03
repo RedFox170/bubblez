@@ -9,16 +9,8 @@ import { v2 as cloudinary } from "cloudinary";
 
 export const createMarketItem = async (req, res, next) => {
   try {
-    const {
-      title,
-      description,
-      price,
-      image,
-      tags,
-      zip,
-      bookmarked,
-      offerType,
-    } = req.body;
+    const { title, description, price, image, tags, bookmarked, offerType } =
+      req.body;
 
     // Überprüfe, ob der JWT-Token im Cookie vorhanden ist
     const token = req.cookies.token;
@@ -50,7 +42,6 @@ export const createMarketItem = async (req, res, next) => {
       price,
       image: imgURL,
       tags,
-      zip,
       bookmarked,
       offerType,
       creator: creatorId,
@@ -80,9 +71,11 @@ export const createMarketItem = async (req, res, next) => {
 
 export const getAllMarketItems = async (req, res, next) => {
   try {
-    const marketItems = await MarketModel.find();
-    console.log("marketItems", marketItems);
-    res.status(200).send(marketItems);
+    const marketItems = await MarketModel.find().populate(
+      "creator",
+      "userName profileImage"
+    );
+    res.json(marketItems);
   } catch (error) {
     next(error);
   }

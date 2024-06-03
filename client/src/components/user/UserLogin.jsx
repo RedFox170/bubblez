@@ -18,10 +18,10 @@ const UserLogin = () => {
       email: el.email.value,
       password: el.password.value,
     };
-    console.log(body);
+
     try {
       const data = await postDate("login", body); // postDate ist ausgelagerter Fetch
-      
+
       setUserData(data.user);
 
       setIsLoggedIn(true);

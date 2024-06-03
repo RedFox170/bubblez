@@ -1,26 +1,39 @@
+import { useNavigate } from "react-router-dom";
 import "../reuseable/styles/reusableFormComponents.css";
 import "../reuseable/styles/reusableGlobal.css";
+import zxcvbn from "zxcvbn";
 
 const UserRegister = () => {
+  const navigate = useNavigate();
+
   const submitHandler = async (event) => {
-    console.log("submitHandler Btn in userRegister löst aus");
     event.preventDefault();
     const el = event.target.elements;
+
+    const password = el.password.value;
+    const confirmPassword = el.confirmPassword.value;
+    const passwordStrength = zxcvbn(password);
+
+    console.log("Password strength score:", passwordStrength.score);
+
+    if (passwordStrength.score < 3) {
+      alert(
+        "Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort."
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Die Passwörter stimmen nicht überein.");
+      return;
+    }
 
     const body = {
       userName: el.userName.value,
       email: el.email.value,
-      password: el.password.value,
-      confirmPassword: el.confirmPassword.value,
+      password,
+      confirmPassword,
     };
-    console.log(body);
-
-    // Passwort überprüfung
-    if (body.password !== body.confirmPassword) {
-      console.error("Passwords do not match!");
-
-      return; // abbrechen, wenn die Passwörter nicht übereinstimmen
-    }
 
     try {
       const response = await fetch("http://localhost:5500/register", {
@@ -33,14 +46,18 @@ const UserRegister = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log({ data });
-        event.target.reset(); // Zurücksetzen des Formulars bei erfolgreicher Registrierung
+        console.log("Registration successful:", data);
+        event.target.reset();
+        alert("Sie haben sich erfolgreich registriert.");
+        navigate("/login");
       } else {
         const error = await response.text();
         console.error("Registration failed:", error);
+        alert("Registrierung fehlgeschlagen: " + error);
       }
     } catch (error) {
       console.error("Registration failed:", error);
+      alert("Registrierung fehlgeschlagen: " + error.message);
     }
   };
 

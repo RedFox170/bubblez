@@ -14,11 +14,13 @@ import {
   createGroupPost,
   toggleLikePost,
   createGroupPostComment,
+  getGroupDetails,
 } from "../controller/groupsController.js";
 
 const groupsRouter = express.Router();
 
 groupsRouter.get("/getAllGroups", getAllGroups);
+groupsRouter.get("/getGroupDetails/:id", authorizeUser, getGroupDetails);
 groupsRouter.get("/getFollowedGroups", authorizeUser, getFollowedGroups);
 groupsRouter.get("/getFollowedGroups/:id", getFollowedGroupByUserId);
 groupsRouter.get("/getSearchGroups/:search", authorizeUser, getSearchGroups);
