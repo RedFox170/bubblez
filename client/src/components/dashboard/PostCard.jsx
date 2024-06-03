@@ -12,6 +12,9 @@ const PostCard = ({ post }) => {
   const [likes, setLikes] = useState(post.likes);
   const { userData } = useContext(UserContext);
 
+  /******************************************************
+   *   Post Liken
+   ******************************************************/
   const handleLikeClick = async () => {
     try {
       const response = await fetch(
@@ -39,6 +42,9 @@ const PostCard = ({ post }) => {
     setReply(event.target.value);
   };
 
+  /******************************************************
+   *    Kommentar absenden
+   ******************************************************/
   const submitReply = async () => {
     if (reply.trim() !== "") {
       try {
@@ -70,6 +76,9 @@ const PostCard = ({ post }) => {
     }
   };
 
+  /******************************************************
+   *    Kommentare anzeigen
+   ******************************************************/
   const toggleCommentsVisibility = () => {
     setShowComments(!showComments);
   };

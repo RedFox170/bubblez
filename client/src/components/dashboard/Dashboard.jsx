@@ -1,4 +1,3 @@
-// components/Dashboard.jsx
 import { useState, useEffect } from "react";
 import PostForm from "./PostForm";
 import PostList from "./PostList";
@@ -40,7 +39,17 @@ const Dashboard = () => {
         }
 
         const feedData = await feedRes.json();
-        setPosts(feedData);
+        console.log("Fetched posts:", feedData);
+
+        // Verhindern doppelter Einträge
+        /*  Ein Set ist eine Sammlung von Werten, bei der jeder Wert nur einmal vorkommen kann. Durch die Übergabe des Arrays mit den IDs an new Set([...]) werden doppelte IDs entfernt */
+        const uniquePosts = Array.from(
+          new Set(feedData.map((post) => post._id))
+        ).map((id) => {
+          return feedData.find((post) => post._id === id);
+        });
+
+        setPosts(uniquePosts);
       } catch (error) {
         setError(error.message);
         console.error("Error fetching data:", error);
@@ -57,8 +66,7 @@ const Dashboard = () => {
   }
 
   if (error) {
-    // Fehlerstatus überprüfen
-    return <p>Error: {error}</p>; // Fehlermeldung anzeigen
+    return <p>Error: {error}</p>;
   }
 
   if (!userData) {

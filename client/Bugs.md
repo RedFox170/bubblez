@@ -4,8 +4,8 @@
 # ToDo´s, Fehler und Bugs
 
 ### neue Baustellen
-- [ ] Like Button defekt
-- [ ] Feed sollte soweit klappen! Gruppenbeiträge werden noch nicht gerendert -> ich denke es liegt an der inkonsistenten schreibweise (groupsbeiträge sind anders als Post beiträge) | Beiträge werden doppelt gerendert
+- [x] Like Button defekt
+- [ ] Feed sollte soweit klappen! Gruppenbeiträge werden noch nicht gerendert -> ich denke es liegt an der inkonsistenten schreibweise (groupsbeiträge sind anders als Post beiträge) | Beiträge werden doppelt gerende
 - [x] Logout löscht die Cookies/LS nicht mehr (sieht so aus als würde er den token löschen und kurz danach ist es wieder da)
 
 ### ToDo
@@ -21,8 +21,11 @@
 - [x] Marktitem Erstellen ist defekt
 - [x] Blur effekt auf marktitems
 - [x] Freund*in Hinzufügen Button + Anzeigen Liste mit freunden
+- [ ] Cloudinary in feed und gruppen ergänzen
+- [ ] Freunde Hinzufügen -> Mit Annehmen funktion so dass nicht oneWay freundschaft gibt
 - [ ] Nutzer Beiträge (feed)
 - [ ] bilder upload für Gruppenbeiträge, Avatar; Feed-Beiträge
+- [ ] Grobe Navigation im Feed
 - [ ] Landingpage soll Vision der App transportieren
 Gruppe muss beim verlassen auch die group vom user entfernen.
 - [ ] wenn ich nicht eingeloggt bin gelang ich beim klick vom Logo aufs Dashboard
@@ -37,5 +40,8 @@ Gruppe muss beim verlassen auch die group vom user entfernen.
 - [ ] Beim versuch ein GroupPost zu liken wird nach dem ersten Klick eine kurze änderung angezeigt aber es springt sofort wieder zurück auf die Ursprüngliche Like anzahl.
 Beim nochmaligen Versuch klappt es ohne probleme.
 
-- [ ] 
+
+### Styling BUGS/ToDo
+- [ ] Gruppen Header hat falsches CSS
+- [ ] Freund Adden in Follow umbennen -> buttons Stylen
 
