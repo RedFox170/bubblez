@@ -1,19 +1,24 @@
-// components/PostForm.jsx
 import { useState } from "react";
 import Avatar from "/public/avatar-placeholder.png";
-// import { Cloudinary } from "cloudinary-core";
+import { handleImageUpload } from "../cloudinary/handleImageUpload";
 
 const PostForm = ({ setPosts, user }) => {
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
 
+  /******************************************************
+   *    Extrahieren von Links aus dem Text
+   ******************************************************/
   const extractLinks = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const urls = text.match(urlRegex);
     return urls || [];
   };
 
+  /******************************************************
+   *    Einreichen des Posts
+   ******************************************************/
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -50,18 +55,13 @@ const PostForm = ({ setPosts, user }) => {
     }
   };
 
-  // Platzhalter für das Bild-Upload-Handling
-  const handleImageUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
+  /******************************************************
+   *    Bild-Upload-Handling
+   ******************************************************/
+  const onImageChange = async (event) => {
     setUploading(true);
-
-    // Simuliere das Hochladen des Bildes
-    setTimeout(() => {
-      setImage(URL.createObjectURL(file));
-      setUploading(false);
-    }, 1000);
+    await handleImageUpload(event, setImage);
+    setUploading(false);
   };
 
   return (
@@ -90,7 +90,7 @@ const PostForm = ({ setPosts, user }) => {
           type="file"
           id="imageUpload"
           className="hidden"
-          onChange={handleImageUpload}
+          onChange={onImageChange}
         />
         <label htmlFor="imageUpload" className="cursor-pointer">
           <svg

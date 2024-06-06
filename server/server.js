@@ -3,18 +3,30 @@ import mongoose from "mongoose";
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 // import session from "express-session";
 import userRouter from "./routes/userRouter.js";
 import feedRouter from "./routes/feedRouter.js";
 import postRouter from "./routes/postRouter.js";
 import groupsRouter from "./routes/groupsRouter.js";
 import marketRouter from "./routes/marketRouter.js";
-import dotenv from "dotenv";
 import usersRouter from "./routes/usersRouter.js";
+import imageRouter from "./cloudinary/imageRouter.js";
+
+//! request loggen mehr loggen
 
 //import userRouter from "./routes/user.js";
 dotenv.config();
 const app = express();
+
+/******************************************************
+ *    __dirname und __filename bereitstellen
+ ******************************************************/
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /******************************************************
  *    Mit Mongoose verbinden
@@ -32,14 +44,15 @@ mongoose
 mongoose.connection.on("error", () => console.log);
 
 app.set("trust proxy", 1);
+
 /******************************************************
  *    Middleware
  ******************************************************/
-
+//! switch einbauen ... wenn in production dann cors auf die URL des Frontends setzen ansonsten auf localhost (siehe env datei)
 app.use(
   cors({
     origin: "http://localhost:5173", // URL unseres Frontends
-    credentials: true, // erlaube Cookie-Austausch
+    credentials: true, // erlaube Cookie-Austausch zB für Authentifizierung
   })
 );
 
@@ -57,6 +70,13 @@ app.use("/", postRouter);
 app.use("/", groupsRouter);
 app.use("/", marketRouter);
 app.use("/", usersRouter);
+app.use("/", imageRouter);
+
+/******************************************************
+ *  Statischer Ordner für hochgeladene Dateien
+ * ******************************************************/
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /******************************************************
  *   Server starten

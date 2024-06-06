@@ -1,25 +1,37 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/userContext.jsx";
+import { handleImageUpload } from "../cloudinary/handleImageUpload.jsx";
 
 const UpdateProfile = () => {
   const { userData, setUserData } = useContext(UserContext);
   const [uploadImg, setUploadImg] = useState(null);
 
-  // Image Upload
-  function handleImageUpload(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
+  /******************************************************
+   *   Bild hochladen - useEffect -
+   ******************************************************/
 
-    reader.onloadend = () => {
-      const imageData = reader.result;
-      setUploadImg(imageData);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
+  useEffect(() => {
+    console.log("uploading img in useEffect:", uploadImg);
+    if (uploadImg) {
+      setUserData((prev) => ({ ...prev, image: uploadImg }));
     }
-  }
+  }, [uploadImg]);
 
+  useEffect(() => {
+    console.log("Current userData:", userData);
+  }, [userData]);
+
+  /******************************************************
+   *   Bild hochladen - onChange -
+   ******************************************************/
+
+  const onImageChange = (e) => {
+    handleImageUpload(e, setUploadImg);
+  };
+
+  /******************************************************
+   *   Formdaten löschen - onDelete -
+   ******************************************************/
   // Function to handle delete form field
   const onDelete = async (fieldName) => {
     console.log("fieldName:", fieldName);
@@ -43,7 +55,9 @@ const UpdateProfile = () => {
     }
   };
 
-  // Function to handle form submission
+  /******************************************************
+   *   Formdaten ändern - handleSubmit -
+   ******************************************************/
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -55,6 +69,11 @@ const UpdateProfile = () => {
       }
     }
 
+    // uploadImg zu updatedData hinzufügen
+    if (uploadImg) {
+      updatedData.image = uploadImg;
+    }
+
     try {
       const res = await fetch(`http://localhost:5500/edit/${userData._id}`, {
         method: "PATCH",
@@ -62,16 +81,21 @@ const UpdateProfile = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({
-          ...updatedData,
-        }),
+        body: JSON.stringify(updatedData),
       });
       const data = await res.json();
-      setUserData(data.user);
-      alert("Profile updated successfully!");
-      window.location.reload();
+
+      if (res.ok) {
+        console.log("data:", data, "data.user:", data.user);
+        setUserData(data.user);
+        alert("Profile updated successfully!");
+      } else {
+        console.error("Error updating profile:", data.message);
+        alert("Error updating profile: " + data.message);
+      }
     } catch (error) {
       console.log(error);
+      alert("An error occurred while updating the profile.");
     }
   };
 
@@ -88,10 +112,10 @@ const UpdateProfile = () => {
           >
             <div className="col-span-full flex flex-col items-center">
               <div className="profile-image-upload mb-4">
-                {uploadImg ? (
+                {userData.image || uploadImg ? (
                   <div className="image-preview flex flex-col items-center">
                     <img
-                      src={uploadImg}
+                      src={uploadImg || userData.image}
                       alt="Profile"
                       className="w-[150px] h-[150px] object-cover rounded-full"
                     />
@@ -119,7 +143,7 @@ const UpdateProfile = () => {
                     type="file"
                     id="image"
                     name="image"
-                    onChange={handleImageUpload}
+                    onChange={onImageChange}
                     className="file-input hidden"
                   />
                   <span className="reusableFormBtn mt-2">Bild wählen</span>

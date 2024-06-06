@@ -4,7 +4,7 @@ import CurrencyInput from "react-currency-input-field";
 
 import { useNavigate } from "react-router-dom";
 // import { postDate } from "../reuseable/fetchData.jsx";
-import { handleImageUpload } from "../reuseable/imgToString.jsx";
+import { handleImageUpload } from "../cloudinary/handleImageUpload.jsx";
 
 const MarketForm = () => {
   const navigate = useNavigate();
@@ -28,16 +28,26 @@ const MarketForm = () => {
     offerType: "", //~ Verkaufen, verschenken  etc
   });
 
+  /******************************************************
+   *    Preis Input - useEffect -
+   ******************************************************/
+
   useEffect(() => {
     setFormData((prevObj) => ({ ...prevObj, offerType: priceInput }));
   }, [priceInput]);
 
-  //! Cloudinary
+  /******************************************************
+   *    Bilder hochladen - useEffect -
+   ******************************************************/
   useEffect(() => {
-    formData.image = uploadImg;
+    console.log("UploadImg in useEffect:", uploadImg);
+    setFormData((prevObj) => ({ ...prevObj, image: uploadImg }));
   }, [uploadImg]);
 
-  // alle Input Felder
+  /******************************************************
+   *    Formularfelder - onChange -
+   ******************************************************/
+
   const handleChange = (e) => {
     setErrorTitle("");
     setErrorDescription("");
@@ -50,14 +60,10 @@ const MarketForm = () => {
     }));
   };
 
-  // Preis Input
   const handlePriceChange = (value) => {
     setErrorTitle("");
     setErrorDescription("");
     setErrorTags("");
-    /* 
-    wenn man bei Preis nix angibt und Senden klickt, wird ein error unter Preis angezeigt. Wenn man jetzt einen Buchstaben klickt, verschwindet die Error Message, obwohl der PreisInput keine Buchstaben akzeptiert. Um dieses Problem zu lösen, wird erst geprüft, ob 'value' eine Zahl ist. Falls nicht, wird der Nutzer erneut aufgefordert eine Zahl einzugeben! 
-     */
     if (isNaN(value)) {
       setErrorPrice("Bitte gib eine Zahl ein");
     } else {
@@ -73,8 +79,6 @@ const MarketForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // checke, ob Formular korrekt ausgefüllt wurde
-      //! bug -> wenn mehrere Felder fehlen, wird nur oberstes angezeigt
       if (!formData.title) {
         setErrorTitle("Bitte gib einen Artikel ein");
         return;
@@ -83,23 +87,23 @@ const MarketForm = () => {
         setErrorDescription("Bitte gib eine Beschreibung ein");
         return;
       }
-
       if (!priceInput) {
         setErrorOfferType("Bitte wähle einen Angebotstyp");
         return;
       }
-
-      if (priceInput === "Verkaufen" || priceInput === "Vermieten") {
-        if (!formData.price) {
-          setErrorPrice("Bitte gib einen Preis an");
-          return;
-        }
+      if (
+        (priceInput === "Verkaufen" || priceInput === "Vermieten") &&
+        !formData.price
+      ) {
+        setErrorPrice("Bitte gib einen Preis an");
+        return;
       }
-
       if (!formData.tags) {
         setErrorTags("Bitte gib eine Kategorie an");
         return;
       }
+
+      console.log("Form data before submit:", formData);
 
       const response = await fetch("http://localhost:5500/createMarketItem", {
         method: "POST",
@@ -109,17 +113,14 @@ const MarketForm = () => {
         credentials: "include",
         body: JSON.stringify(formData),
       });
-
+      console.log("Response createMarktItem in MarketForm:", response);
       const data = await response.json();
-
-      console.log("dATA in MarketForm handleSubmit:", data);
-
-      // User.marketItems und LocalStorage aktualisieren (frontend)
       setUserData({
         ...userData,
         marketItems: [{ ...userData.marketItems }, formData],
       });
 
+      console.log("Data after submit:", data);
       navigate("/market");
     } catch (error) {
       console.log(error);
@@ -129,6 +130,14 @@ const MarketForm = () => {
   const handleDivSelector = (input) => {
     setDivSelector(input);
     setErrorOfferType("");
+  };
+
+  /******************************************************
+   *   Bild hochladen - onChange -
+   ******************************************************/
+
+  const onImageChange = (e) => {
+    handleImageUpload(e, setUploadImg);
   };
 
   return (
@@ -459,7 +468,7 @@ const MarketForm = () => {
                   type="file"
                   id="image"
                   name="image"
-                  onChange={(e) => handleImageUpload(e, setUploadImg)}
+                  onChange={onImageChange}
                   className="mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>

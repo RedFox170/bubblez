@@ -35,6 +35,7 @@ const UserRegister = () => {
       confirmPassword,
     };
 
+    //!  const response = await fetch("https://bubblez.pushgang.de/server/register",
     try {
       const response = await fetch("http://localhost:5500/register", {
         method: "POST",

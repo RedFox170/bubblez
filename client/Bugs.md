@@ -5,6 +5,7 @@
 
 ### neue Baustellen
 - [x] Like Button defekt
+- [ ] env switch einbauen
 - [ ] Feed sollte soweit klappen! Gruppenbeiträge werden noch nicht gerendert -> ich denke es liegt an der inkonsistenten schreibweise (groupsbeiträge sind anders als Post beiträge) | Beiträge werden doppelt gerende
 - [x] Logout löscht die Cookies/LS nicht mehr (sieht so aus als würde er den token löschen und kurz danach ist es wieder da)
 
@@ -21,7 +22,8 @@
 - [x] Marktitem Erstellen ist defekt
 - [x] Blur effekt auf marktitems
 - [x] Freund*in Hinzufügen Button + Anzeigen Liste mit freunden
-- [ ] Cloudinary in feed und gruppen ergänzen
+- [x] Cloudinary in feed und gruppen ergänzen
+- [ ] Cloudinary Profilbild 
 - [ ] Freunde Hinzufügen -> Mit Annehmen funktion so dass nicht oneWay freundschaft gibt
 - [ ] Nutzer Beiträge (feed)
 - [ ] bilder upload für Gruppenbeiträge, Avatar; Feed-Beiträge
@@ -30,6 +32,8 @@
 Gruppe muss beim verlassen auch die group vom user entfernen.
 - [ ] wenn ich nicht eingeloggt bin gelang ich beim klick vom Logo aufs Dashboard
 - [ ] GruppenOverview und Marktoverview, Profilansicht unterlabt sich mit navbar
+- [ ] sortieren ist kaputt
+- [ ] alte Componenten in mainComponents - aufräumen
 
 ### State/Storage/Cookie Probleme:
 - [?] Usersdata Cookie wird beim logout nicht gelöscht - brauch ich nicht mehr

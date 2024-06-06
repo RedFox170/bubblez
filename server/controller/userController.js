@@ -199,11 +199,8 @@ export const addFriend = async (req, res) => {
 /******************************************************
  *    editUser
  ******************************************************/
-//! Id muss frontendseitig mitgeschickt werden
-//! so kann nutzer sowie admin den controller verwenden
-
 export const editUser = async (req, res, next) => {
-  // Extrahiere die Felder aus dem req.body
+  // Extrahiere Felder aus req.body
   const { city, firstName, aboutMe, image = null, ...rest } = req.body;
 
   // Kopiere das rest Object in structuredObj
@@ -225,9 +222,11 @@ export const editUser = async (req, res, next) => {
     const userId = req.params.id;
     const options = { new: true };
 
+    console.log("Updating user with data:", structuredObj);
+
     const user = await UserModell.findByIdAndUpdate(
       userId,
-      { $set: structuredObj },
+      structuredObj,
       options
     );
 
@@ -260,24 +259,3 @@ export const deleteUser = async (req, res, next) => {
 
 //done: userSchema erweitern -> geodata: String
 //done: Geodaten sollen in DB/LS gespeichert werden
-
-//todo: filtere alle User mit gleicher PLZ, dann filtere erneut, wer sich in der Umkreissuche befindet (Haversine formula -> calculates distances on geodata).
-
-export const neighbourController = async (req, res, next) => {
-  try {
-    const { zip } = req.body;
-
-    //! 1) user mit gleicher Zip finden:
-    const zipNeighbours = await UserModell.find({ "address.zip": `${zip}` });
-    // const zipNeighboursPlainObj = zipNeighbours.toObject();
-    if (!zipNeighbours[0].address[0].zip === zip) {
-      res.send("No neighbours found in this zipcode area.");
-    }
-
-    res.send({ zipNeighbours });
-
-    //! 2) User im Umkreis (variabel) finden:
-  } catch (err) {
-    console.log(err);
-  }
-};
