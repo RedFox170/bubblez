@@ -6,6 +6,7 @@ import "../reuseable/styles/reusableFormComponents.css";
 import "../reuseable/styles/reusableGlobal.css";
 import { CustomCheckbox } from "../reuseable/CustomCheckbox.jsx";
 import { handleImageUpload } from "../cloudinary/handleImageUpload.jsx";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const GroupForm = () => {
   const { userData, setUserData } = useContext(UserContext);
@@ -66,7 +67,7 @@ const GroupForm = () => {
     e.preventDefault();
     console.log("FormData GroupFom", formData);
     try {
-      const response = await fetch("http://localhost:5500/createGroup", {
+      const response = await fetch(`${API_URL}/createGroup`, {
         method: "POST",
         credentials: "include",
         headers: {

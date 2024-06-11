@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Avatar from "/public/avatar-placeholder.png";
 import { handleImageUpload } from "../cloudinary/handleImageUpload";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const PostForm = ({ setPosts, user }) => {
   const [content, setContent] = useState("");
@@ -33,7 +34,7 @@ const PostForm = ({ setPosts, user }) => {
     console.log("formData in PostForm", formData);
 
     try {
-      const response = await fetch("http://localhost:5500/create", {
+      const response = await fetch(`${API_URL}/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

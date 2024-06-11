@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext.jsx";
 import { GroupsContext } from "../context/groupsContext.jsx";
 import { UsersContext } from "../context/usersContext.jsx";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const UserLogout = () => {
   const { setIsLoggedIn } = useContext(UserContext);
@@ -13,7 +14,7 @@ const UserLogout = () => {
   useEffect(() => {
     const logout = async () => {
       try {
-        const response = await fetch("http://localhost:5500/logout", {
+        const response = await fetch(`${API_URL}/logout`, {
           method: "POST",
           credentials: "include",
         });

@@ -1,13 +1,12 @@
 import "./home.css";
-import Carousel from "./Carousel.jsx";
 import { Link } from "react-router-dom";
+import "../reuseable/styles/reusableFormComponents.css";
+import "../reuseable/styles/reusableGlobal.css";
 
 const Home = () => {
   return (
     <>
-      <section className="relative z-10">
-        <Carousel />
-      </section>
+      <section className="relative z-10"></section>
       <section className="style-test w-auto">
         <div className="color"></div>
         <div className="color"></div>

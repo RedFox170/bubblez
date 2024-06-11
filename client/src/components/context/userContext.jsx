@@ -2,6 +2,8 @@ import { createContext, useState, useEffect } from "react";
 
 export const UserContext = createContext();
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
+
 export const UserProvider = ({ children }) => {
   // 1) Versuche, gespeicherte Benutzerdaten aus dem localStorage zu laden.
   const savedUser = JSON.parse(localStorage.getItem("userData"));
@@ -27,7 +29,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:5500/getUserData", {
+        const response = await fetch(`${API_URL}/getUserData`, {
           credentials: "include",
         });
         if (!response.ok) {

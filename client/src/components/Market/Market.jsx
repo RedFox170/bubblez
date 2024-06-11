@@ -8,6 +8,7 @@ import MarketCard from "./MarketCard.jsx";
 import "../reuseable/styles/reusableGlobal.css";
 import "../reuseable/styles/reusableFormComponents.css";
 import { Link } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const Market = () => {
   // eslint-disable-next-line no-unused-vars
@@ -27,12 +28,9 @@ const Market = () => {
         console.log("TEST TEST TEST TES TESTTT");
         //todo Nach dem fetchen aller Market items, filtern nach PLZ oder Stadt (zB. alle PLZs von Berlin) fehlen
         //todo Alternativ -> Umkreissuche -> Artikel in 100m/250m/500m etc
-        const response = await fetch(
-          `http://localhost:5500/getAllMarketItems`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${API_URL}/getAllMarketItems`, {
+          credentials: "include",
+        });
         const data = await response.json();
         console.log("DATA DATA DATA IN MARKET ->>>", data);
         setMarketData(data);
@@ -63,7 +61,7 @@ const Market = () => {
     try {
       // suche
       const response = await fetch(
-        `http://localhost:5500/getMarketItemByName/${searchValue}`,
+        `${API_URL}/getMarketItemByName/${searchValue}`,
         {
           credentials: "include",
         }

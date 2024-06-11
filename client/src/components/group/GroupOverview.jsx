@@ -8,6 +8,7 @@ import GroupFilter from "./GroupFilter.jsx";
 import "../reuseable/styles/reusableGlobal.css";
 import "../reuseable/styles/reusableFormComponents.css";
 import { Link } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const GroupOverview = () => {
   const { userData, setUserData } = useContext(UserContext);
@@ -27,7 +28,7 @@ const GroupOverview = () => {
   useEffect(() => {
     const fetchGroupsData = async () => {
       try {
-        const response = await fetch("http://localhost:5500/getAllGroups");
+        const response = await fetch(`${API_URL}/getAllGroups`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -41,7 +42,7 @@ const GroupOverview = () => {
 
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:5500/getUserData", {
+        const response = await fetch(`${API_URL}/getUserData`, {
           credentials: "include",
         });
         if (!response.ok) {
@@ -77,7 +78,7 @@ const GroupOverview = () => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `http://localhost:5500/getSearchGroups/${searchValue}`,
+        `${API_URL}/getSearchGroups/${searchValue}`,
         {
           credentials: "include",
         }

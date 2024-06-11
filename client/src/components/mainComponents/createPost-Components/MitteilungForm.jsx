@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "../../reuseable/styles/reusableFormComponents.css";
 import "../../reuseable/styles/reusableGlobal.css";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
   const [title, setTitle] = useState("");
@@ -65,17 +66,14 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
     };
 
     try {
-      const response = await fetch(
-        `http://localhost:5500/createGroupPost/${groupId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${API_URL}/createGroupPost/${groupId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+        credentials: "include",
+      });
 
       if (response.ok) {
         const data = await response.json();

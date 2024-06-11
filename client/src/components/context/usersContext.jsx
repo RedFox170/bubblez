@@ -1,3 +1,5 @@
+//! Wird der Context überhaupt noch benötigt?
+
 import { createContext, useState, useEffect } from "react";
 
 export const UsersContext = createContext();

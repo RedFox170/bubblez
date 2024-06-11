@@ -3,6 +3,7 @@ import Avatar from "../../../public/avatar-placeholder.png";
 import { Link, useParams } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const GroupPostCard = ({ post }) => {
   const [reply, setReply] = useState("");
@@ -17,15 +18,12 @@ const GroupPostCard = ({ post }) => {
 
   const handleLikeClick = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:5500/likePost/${groupId}/${postId}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: userId }),
-        }
-      );
+      const response = await fetch(`${API_URL}/likePost/${groupId}/${postId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userId }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to like the post");
@@ -46,7 +44,7 @@ const GroupPostCard = ({ post }) => {
     if (reply.trim() !== "") {
       try {
         const response = await fetch(
-          `http://localhost:5500/addComment/${groupId}/${postId}`,
+          `${API_URL}/addComment/${groupId}/${postId}`,
           {
             method: "POST",
             credentials: "include",

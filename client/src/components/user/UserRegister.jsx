@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import "../reuseable/styles/reusableFormComponents.css";
 import "../reuseable/styles/reusableGlobal.css";
 import zxcvbn from "zxcvbn";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const UserRegister = () => {
   const navigate = useNavigate();
@@ -35,9 +36,8 @@ const UserRegister = () => {
       confirmPassword,
     };
 
-    //!  const response = await fetch("https://bubblez.pushgang.de/server/register",
     try {
-      const response = await fetch("http://localhost:5500/register", {
+      const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

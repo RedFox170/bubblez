@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Avatar from "/avatar-icon.jpg";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const Profile = () => {
   const { userId } = useParams();
@@ -13,7 +14,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await fetch(`http://localhost:5500/users/${userId}`, {
+        const res = await fetch(`${API_URL}/users/${userId}`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -41,7 +42,7 @@ const Profile = () => {
 
   const addFriend = async () => {
     try {
-      const res = await fetch(`http://localhost:5500/addFriend/${userId}`, {
+      const res = await fetch(`${API_URL}/addFriend/${userId}`, {
         method: "POST",
         credentials: "include",
         headers: {

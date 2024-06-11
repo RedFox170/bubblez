@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/userContext.jsx";
 import { handleImageUpload } from "../cloudinary/handleImageUpload.jsx";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const UpdateProfile = () => {
   const { userData, setUserData } = useContext(UserContext);
@@ -37,7 +38,7 @@ const UpdateProfile = () => {
     console.log("fieldName:", fieldName);
 
     try {
-      const res = await fetch(`http://localhost:5500/edit/${userData._id}`, {
+      const res = await fetch(`${API_URL}/edit/${userData._id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -75,7 +76,7 @@ const UpdateProfile = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:5500/edit/${userData._id}`, {
+      const res = await fetch(`${API_URL}/edit/${userData._id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

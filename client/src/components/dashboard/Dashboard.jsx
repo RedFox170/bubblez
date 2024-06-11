@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import PostForm from "./PostForm";
 import PostList from "./PostList";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
+
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -11,7 +13,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await fetch("http://localhost:5500/getUserData", {
+        const userRes = await fetch(`${API_URL}/getUserData`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -26,7 +28,7 @@ const Dashboard = () => {
         const userData = await userRes.json();
         setUserData(userData);
 
-        const feedRes = await fetch("http://localhost:5500/feed", {
+        const feedRes = await fetch(`${API_URL}/feed`, {
           method: "GET",
           credentials: "include",
           headers: {

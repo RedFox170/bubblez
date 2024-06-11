@@ -5,6 +5,7 @@ import CurrencyInput from "react-currency-input-field";
 import { useNavigate } from "react-router-dom";
 // import { postDate } from "../reuseable/fetchData.jsx";
 import { handleImageUpload } from "../cloudinary/handleImageUpload.jsx";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const MarketForm = () => {
   const navigate = useNavigate();
@@ -105,7 +106,7 @@ const MarketForm = () => {
 
       console.log("Form data before submit:", formData);
 
-      const response = await fetch("http://localhost:5500/createMarketItem", {
+      const response = await fetch(`${API_URL}/createMarketItem`, {
         method: "POST",
         headers: {
           "content-type": "application/json",

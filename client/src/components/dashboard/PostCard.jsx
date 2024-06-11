@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../context/userContext";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const PostCard = ({ post }) => {
   const [reply, setReply] = useState("");
@@ -17,15 +18,12 @@ const PostCard = ({ post }) => {
    ******************************************************/
   const handleLikeClick = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:5500/likePost/${post._id}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: userData._id }),
-        }
-      );
+      const response = await fetch(`${API_URL}/likePost/${post._id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userData._id }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to like the post");
@@ -48,20 +46,17 @@ const PostCard = ({ post }) => {
   const submitReply = async () => {
     if (reply.trim() !== "") {
       try {
-        const response = await fetch(
-          `http://localhost:5500/addComment/${post._id}`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              commentText: reply,
-              userId: userData._id,
-            }),
-          }
-        );
+        const response = await fetch(`${API_URL}/addComment/${post._id}`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            commentText: reply,
+            userId: userData._id,
+          }),
+        });
 
         if (response.ok) {
           const updatedPost = await response.json();

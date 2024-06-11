@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import groupPlaceholderImg from "../assets/groupPlaceholder.jpg";
 import { UserContext } from "../context/userContext.jsx";
 import { Link } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const GroupCard = ({ group }) => {
   const { title, text, image, privateGroup, members, mods, admins } = group;
@@ -68,13 +69,10 @@ const GroupCard = ({ group }) => {
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:5500/followGroup/${groupId}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${API_URL}/followGroup/${groupId}`, {
+        method: "POST",
+        credentials: "include",
+      });
       console.log("joinGroupBtnHandler groupId", groupId);
       if (!response.ok) {
         const errorData = await response.json();

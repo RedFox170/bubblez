@@ -8,6 +8,7 @@ import "../reuseable/styles/reusableGlobal.css";
 import "../reuseable/styles/reusableFormComponents.css";
 import MitteilungForm from "../mainComponents/createPost-Components/MitteilungForm.jsx";
 import Avatar from "../../../public/avatar-placeholder.png";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const GroupComponent = () => {
   const { groupId } = useParams();
@@ -23,12 +24,9 @@ const GroupComponent = () => {
 
   const fetchGroupData = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:5500/getGroupDetails/${groupId}`,
-        {
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${API_URL}/getGroupDetails/${groupId}`, {
+        credentials: "include",
+      });
       if (response.ok) {
         const data = await response.json();
         setSelectedGroup(data);
@@ -52,26 +50,10 @@ const GroupComponent = () => {
     return <div>Lädt die Gruppe...</div>;
   }
 
-  /* *****************************************************
-   *    Gruppenkommentare laden (funzt eventuell garnicht?!)
-   ******************************************************/
-  /*  if (isLoading) {
-    return <div>Lädt...</div>; // Zeige eine Ladeanzeige
-  }
-
-  if (!groupsData) {
-    return <div>Keine Daten verfügbar.</div>;
-  }
-
-  const {
-     image
-  } = group;
- */
-
   /******************************************************
    *    img
    ******************************************************/
-  // ! Cloudenary Anbindung fehlt noch
+
   const groupImg = () => {
     if (selectedGroup.image === "") {
       return groupPlaceholderImg;
