@@ -5,6 +5,8 @@ import { GroupsContext } from "../context/groupsContext.jsx";
 import "../reuseable/styles/reusableFormComponents.css";
 import "../reuseable/styles/reusableGlobal.css";
 import { CustomCheckbox } from "../reuseable/CustomCheckbox.jsx";
+import { handleImageUpload } from "../cloudinary/handleImageUpload.jsx";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const GroupForm = () => {
   const { userData, setUserData } = useContext(UserContext);
@@ -51,17 +53,11 @@ const GroupForm = () => {
   };
 
   /******************************************************
-   *     Bild-Upload
+   *   Bild hochladen - onChange -
    ******************************************************/
 
-  const handleImageUpload = (e) => {
-    const image = e.target.files[0];
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setUploadImg(reader.result);
-    };
-    reader.readAsDataURL(image);
+  const onImageChange = (e) => {
+    handleImageUpload(e, setUploadImg);
   };
 
   /******************************************************
@@ -71,7 +67,7 @@ const GroupForm = () => {
     e.preventDefault();
     console.log("FormData GroupFom", formData);
     try {
-      const response = await fetch("http://localhost:5500/createGroup", {
+      const response = await fetch(`${API_URL}/createGroup`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -101,18 +97,75 @@ const GroupForm = () => {
   };
 
   return (
-    <section className="flex  justify-center items-center min-h-screen w-full">
-      <div className="relative">
-        <div className="reusableSquare absolute" style={{ "--i": 0 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 1 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 2 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 3 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 4 }}></div>
-        <div className="reusableContainer reusableBorder mt-12 shadow-md">
+    <section className="flex justify-center items-center h-screen w-full relative">
+      <div className="reusableSquareContainer absolute inset-0 flex items-center justify-center">
+        <div
+          className="reusableBubble"
+          style={{
+            "--i": 0,
+            position: "absolute",
+            top: "250px",
+            right: "100px",
+            width: "200px",
+            height: "200px",
+            zIndex: 2,
+          }}
+        ></div>
+        <div
+          className="reusableBubble"
+          style={{
+            "--i": 1,
+            position: "absolute",
+            top: "220px",
+            left: "120px",
+            width: "120px",
+            height: "120px",
+            zIndex: 2,
+          }}
+        ></div>
+        <div
+          className="reusableBubble"
+          style={{
+            "--i": 2,
+            position: "absolute",
+            top: "500px",
+            right: "650px",
+            width: "140px",
+            height: "140px",
+            zIndex: 2,
+          }}
+        ></div>
+        <div
+          className="reusableBubble"
+          style={{
+            "--i": 3,
+            position: "absolute",
+            bottom: "100px",
+            right: "100px",
+            width: "250px",
+            height: "250px",
+            zIndex: 0,
+          }}
+        ></div>
+        <div
+          className="reusableBubble"
+          style={{
+            "--i": 4,
+            position: "absolute",
+            bottom: "150px",
+            left: "100px",
+            width: "150px",
+            height: "150px",
+            zIndex: 2,
+          }}
+        ></div>
+      </div>
+      <div className="max-w-md">
+        <div className="reusableContainer reusableFormContainer reusableBorder mt-12 p-11 shadow-md relative flex justify-center items-center">
           <form className="reusableForm" onSubmit={handleSubmit}>
             <div>
               <h2 className="text-xl font-bold mb-4 text-gray-800">
-                Erstelle eine neue Gruppe 🏘️
+                Erstelle eine neue Gruppe
               </h2>
               <div className="mb-4">
                 <label
@@ -127,7 +180,7 @@ const GroupForm = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                  className="reusableInput mt-1 p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                 />
                 {errorMessage && <p className="text-red-500">{errorMessage}</p>}
               </div>
@@ -144,7 +197,7 @@ const GroupForm = () => {
                   value={formData.text}
                   onChange={handleChange}
                   rows="4"
-                  className="reusableTextarea "
+                  className="reusableTextarea"
                 ></textarea>
               </div>
               <CustomCheckbox
@@ -152,7 +205,6 @@ const GroupForm = () => {
                 onToggle={handleTogglePrivate}
                 label="Private Gruppe"
               />
-
               <div className="mb-4">
                 <label
                   htmlFor="image"
@@ -164,7 +216,7 @@ const GroupForm = () => {
                   type="file"
                   id="image"
                   name="image"
-                  onChange={handleImageUpload}
+                  onChange={onImageChange}
                   className="reusableInput mt-1 block w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
@@ -178,7 +230,7 @@ const GroupForm = () => {
                 <select
                   id="tags"
                   name="tags"
-                  value={formData.tags} // Stellt sicher, dass formData.tags als String behandelt wird
+                  value={formData.tags}
                   onChange={handleChange}
                   className="mt-1 block text-gray-800 w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                 >
@@ -222,7 +274,7 @@ const GroupForm = () => {
                   <option value="Sonstiges">Sonstiges</option>
                 </select>
               </div>
-              <button type="submit" className="reusableFormBtn ">
+              <button type="submit" className="reusableFormBtn">
                 Neue Gruppe erstellen
               </button>
             </div>

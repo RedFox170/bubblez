@@ -1,41 +1,76 @@
-import { useRef, useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
-
-import UserLogout from "../user/UserLogout.jsx";
+import { useRef, useState, useEffect, useContext } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { UserContext } from "../context/userContext.jsx";
+import { GroupsContext } from "../context/groupsContext.jsx";
+import { UsersContext } from "../context/usersContext.jsx";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 export const DropDownProfile = () => {
   const [hideProfile, setHideProfile] = useState(true);
 
-  // close menu  when clicking outside of it
+  const { setIsLoggedIn } = useContext(UserContext);
+  const { setGroupsData } = useContext(GroupsContext);
+  const { clearUsersData } = useContext(UsersContext);
+  const navigate = useNavigate();
+
   const profileRef = useRef();
   const imgRef = useRef();
 
   const handleDrop = () => {
-    // console.log("hideProfile", hideProfile);
     setHideProfile((prev) => !prev);
   };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      // Überprüfe, ob der Klick innerhalb des Profilbereichs erfolgt ist
       if (
         profileRef.current &&
         !profileRef.current.contains(e.target) &&
         imgRef.current &&
         !imgRef.current.contains(e.target)
       ) {
-        // Wenn außerhalb geklickt wurde, verstecke das Profil-Dropdown
         setHideProfile(true);
       }
     };
 
     window.addEventListener("click", handleClickOutside);
-
-    // Cleanup-Funktion, um den Event-Listener zu entfernen
     return () => {
       window.removeEventListener("click", handleClickOutside);
     };
-  }, []); // Abhängigkeiten array ist leer, da wir nur beim Mounten/Unmounten handeln wollen
+  }, []);
+
+  const userData = localStorage.getItem("userData");
+  let userId = null;
+
+  if (userData) {
+    try {
+      const user = JSON.parse(userData);
+      userId = user._id;
+    } catch (error) {
+      console.error("Error parsing user data from local storage:", error);
+    }
+  }
+
+  const handleLogout = async () => {
+    console.log("Logout clicked");
+    try {
+      const response = await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        setGroupsData([]);
+        clearUsersData();
+        setIsLoggedIn(false);
+        localStorage.clear();
+        navigate("/login");
+      } else {
+        throw new Error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <div className="nav-items flex items-center gap-4" onClick={handleDrop}>
@@ -57,9 +92,7 @@ export const DropDownProfile = () => {
       </button>
 
       {hideProfile ? (
-        <div className="absolute w-fit top-12 right-0 bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-          {/* Invisible placeholder to keep space */}
-        </div>
+        <div className="absolute w-fit top-12 right-0 bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden"></div>
       ) : (
         <div
           className="absolute w-48 top-12 right-0 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2"
@@ -67,17 +100,22 @@ export const DropDownProfile = () => {
         >
           <ul className="flex flex-col">
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <NavLink to="/profile" className="block">
-                Profile
+              <NavLink to={`/profile/${userId}`} className="block">
+                Profile anzeigen
+              </NavLink>
+            </li>
+            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+              <NavLink to="/updateprofile" className="block">
+                Profile bearbeiten
               </NavLink>
             </li>
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
               Settings
             </li>
             <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <NavLink to="/logout" onClick={UserLogout} className="block">
+              <button onClick={handleLogout} className="block w-full text-left">
                 Logout
-              </NavLink>
+              </button>
             </li>
           </ul>
         </div>
@@ -85,3 +123,5 @@ export const DropDownProfile = () => {
     </div>
   );
 };
+
+export default DropDownProfile;

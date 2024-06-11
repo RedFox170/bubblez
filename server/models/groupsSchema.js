@@ -32,6 +32,20 @@ const groupPostSchema = new Schema({
         required: true,
       },
       postTime: { type: Date, default: Date.now },
+      likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }], // Like für den Post
+      comments: [
+        // Kommentare zum Post
+        {
+          text: { type: String, required: true },
+          commenter: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "users",
+            required: true,
+          },
+          commentTime: { type: Date, default: Date.now },
+          likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }], // Likes für den Kommentar
+        },
+      ],
     },
   ],
 });

@@ -1,8 +1,79 @@
+import { useState } from "react";
 import Avatar from "../../../public/avatar-placeholder.png";
+import { Link, useParams } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
+import { de } from "date-fns/locale";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const GroupPostCard = ({ post }) => {
-  //userdaten für das ProfilBild
+  const [reply, setReply] = useState("");
+  const { groupId } = useParams();
+  const postId = post._id;
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState(post.comments || []);
+  const [likes, setLikes] = useState(post.likes || []);
+
   const user = JSON.parse(localStorage.getItem("userData"));
+  const userId = user._id;
+
+  const handleLikeClick = async () => {
+    try {
+      const response = await fetch(`${API_URL}/likePost/${groupId}/${postId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to like the post");
+      }
+
+      const updatedPost = await response.json();
+      setLikes(updatedPost.likes);
+    } catch (error) {
+      console.error("Error liking the post:", error);
+    }
+  };
+
+  const handleReplyChange = (event) => {
+    setReply(event.target.value);
+  };
+
+  const submitReply = async () => {
+    if (reply.trim() !== "") {
+      try {
+        const response = await fetch(
+          `${API_URL}/addComment/${groupId}/${postId}`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              commentText: reply,
+              userId: userId,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const updatedPost = await response.json();
+          setReply("");
+          setComments(updatedPost.comments);
+        } else {
+          throw new Error("Failed to add comment to post");
+        }
+      } catch (error) {
+        console.error("Error adding comment to post:", error);
+      }
+    }
+  };
+
+  const toggleCommentsVisibility = () => {
+    setShowComments(!showComments);
+  };
 
   const formattedDate = new Date(post.postTime).toLocaleDateString("de-DE", {
     year: "numeric",
@@ -12,42 +83,32 @@ const GroupPostCard = ({ post }) => {
     minute: "2-digit",
   });
 
-  // !Überprüfe, ob likes und comments definiert sind und setze sie auf ein leeres Array, falls nicht
-  /*  const likes = post.likes || [];
-  const comments = Array.isArray(post.comments) ? post.comments : []; */
-
-  /******************************************************
-   *    Profilpic
-   ******************************************************/
-  const profilImg = () => {
-    if (user.image === undefined || null) {
-      return Avatar;
-    } else {
-      return user.image;
-    }
-  };
+  const profilImg = () => (user.image ? user.image : Avatar);
 
   return (
-    <div className="reusableBorder  mt-4 p-4 flex flex-col w-full">
-      {/* Kopfzeile mit Profilbild, Name und Datum */}
+    <div className="reusableBorder mt-4 p-4 flex flex-col w-full">
       <div className="flex justify-between items-center mb-4">
-        <aside className="flex items-center">
-          <img
-            src={profilImg()}
-            alt="Profilbild"
-            className="h-10 w-10 rounded-full"
-          />
-          <div className="ml-4">
-            {user.firstName} {user.lastName}
-          </div>
-        </aside>
+        <Link
+          to={`/profile/${post.commenter._id}`}
+          className="flex items-center"
+        >
+          <aside className="flex items-center">
+            <img
+              src={profilImg()}
+              alt="Profilbild"
+              className="h-10 w-10 rounded-full"
+            />
+            <div className="text-base ml-4 font-semibold text-gray-900 dark:text-gray-100">
+              {post.commenter.userName}
+            </div>
+          </aside>
+        </Link>
         <aside>{formattedDate}</aside>
       </div>
 
-      {/* Kommentartext und optional das Bild */}
-      {post.img && (
+      {post.image && (
         <img
-          src={post.img}
+          src={post.image}
           alt="Kommentarbild"
           className="mb-4 w-full object-cover rounded-lg shadow-lg"
         />
@@ -59,9 +120,12 @@ const GroupPostCard = ({ post }) => {
         {post.text}
       </p>
 
-      {/* Fußzeile mit Like- und Kommentar-Buttons */}
       <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-        <button type="button" className="flex items-center">
+        <button
+          type="button"
+          className="flex items-center"
+          onClick={handleLikeClick}
+        >
           <span className="mr-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -78,10 +142,89 @@ const GroupPostCard = ({ post }) => {
               />
             </svg>
           </span>
-          <span>{post.likes}</span>
+          <span>{likes.length}</span>
         </button>
-        <button type="button" className="flex items-center">
-          Kommentare ({post.commentsCount})
+        <button
+          onClick={toggleCommentsVisibility}
+          className="text-gray-600 hover:text-gray-800"
+        >
+          Alle {comments.length} Kommentare anzeigen
+        </button>
+      </div>
+
+      {showComments && (
+        <div className="mt-2">
+          {comments.map((comment) => {
+            const commenter = comment.commenter;
+
+            return (
+              <div key={comment._id} className="mt-4 flex items-center">
+                <Link
+                  to={`/profile/${commenter._id}`}
+                  className="flex items-center"
+                >
+                  <img
+                    src={commenter?.image || Avatar}
+                    alt="Profilbild"
+                    className="h-10 w-10 rounded-full mr-4"
+                  />
+                </Link>
+                <div className="flex-grow">
+                  <div className="flex justify-between">
+                    <Link
+                      to={`/profile/${commenter._id}`}
+                      className="flex items-center"
+                    >
+                      <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {commenter
+                          ? `${commenter.userName}`
+                          : "Ehemaliger Nutzer"}{" "}
+                      </span>
+                    </Link>
+                    <span>
+                      {formatDistanceToNow(new Date(comment.commentTime), {
+                        addSuffix: true,
+                        locale: de,
+                      })}
+                    </span>
+                  </div>
+                  <p>{comment.text}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="mt-4 flex items-center w-full">
+        <img
+          src={profilImg()}
+          alt="Profilbild"
+          className="h-10 w-10 rounded-full"
+        />
+        <input
+          type="text"
+          className="flex-grow p-2 border border-gray-300 rounded-lg"
+          placeholder="Antworten"
+          value={reply}
+          onChange={handleReplyChange}
+          style={{ width: "70%" }}
+        />
+        <button className="w-3/20 ml-2" onClick={submitReply}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+            />
+          </svg>
         </button>
       </div>
     </div>

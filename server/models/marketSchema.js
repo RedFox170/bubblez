@@ -7,7 +7,6 @@ const marketSchema = new Schema({
   price: { type: Number },
   image: { type: String },
   tags: [{ type: String, required: true }], // Kategorien
-  zip: { type: String, required: true },
   offerType: { type: String }, //~ Verkaufen, Verschenken
   bookmarked: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }], // List von Benutzer-IDs, die dem Artikel folgen
   creator: {

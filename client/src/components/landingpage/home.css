@@ -14,32 +14,6 @@ box-sizing: border-box;
     justify-content: center;
     }
 
-section .color {
-    position: absolute;
-    filter: blur(250px);
-}
-
-section .color:nth-child(1){
-    width: 600px;
-    height: 600px;
-    background: #730f71;
-}
-
-section .color:nth-child(2){
-    bottom: -150px;
-    left: 100px;
-    width: 300px;
-    height: 600px;
-    background: #2027e6;
-}
-
-section .color:nth-child(3){
-    bottom: 150px;
-    right: 100px;
-    width: 600px;
-    height: 400px;
-    background: #20b0e6;
-    }
 
 .box {
     position: relative;

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "../../reuseable/styles/reusableFormComponents.css";
 import "../../reuseable/styles/reusableGlobal.css";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
   const [title, setTitle] = useState("");
@@ -10,6 +11,12 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
 
   const handleTopicSelection = (topic) => {
     setSelectedTopic(topic);
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "title") setTitle(value);
+    if (name === "text") setText(value);
   };
 
   /******************************************************
@@ -32,58 +39,50 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
    * und überprüfung der Länge des Betreffs und der Nachricht
    ******************************************************/
 
-  const validateAndSubmitForm = async (e) => {
-    e.preventDefault(); // Verhindert das Standardverhalten des Formulars
+  const validateAndSubmitForm = async (event) => {
+    event.preventDefault();
 
-    // Validierung für 'betreff'
+    // Validierung für 'Betreff'
     if (title.length < 2 || title.length > 50) {
       setErrorMessage("Der Betreff muss zwischen 2 und 50 Zeichen lang sein.");
       return;
     }
 
-    // Validierung für 'message'
+    // Validierung für 'Nachricht'
     if (text.length < 2 || text.length > 5000) {
       setErrorMessage(
         "Die Nachricht muss zwischen 2 und 5000 Zeichen lang sein."
       );
-      return; // Stoppt die Funktion, wenn die Validierung fehlschlägt
+      return;
     }
 
-    // Wenn die Validierung erfolgreich ist, fahre mit dem Senden der Daten fort
-    setErrorMessage(""); // Bereinigt eventuelle vorherige Fehlermeldungen
+    // Fortfahren mit dem Senden der Daten
+    setErrorMessage(""); // Vorherige Fehlermeldungen bereinigen
 
     const formData = {
       title,
       text,
       topic: selectedTopic,
     };
-    console.log("FormData aus MitteilungForm", formData);
 
     try {
-      const response = await fetch(
-        `http://localhost:5500/createGroupPost/${groupId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-          credentials: "include",
-        }
-      );
-      console.log(response);
+      const response = await fetch(`${API_URL}/createGroupPost/${groupId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+        credentials: "include",
+      });
 
       if (response.ok) {
-        console.log("Post erfolgreich gespeichert");
-        // Weiterer Code nach erfolgreicher Speicherung (z.B. Benutzer benachrichtigen, Formular zurücksetzen)
-        closeModal(); // Schließt das Formular/Modal nach dem erfolgreichen Absenden
+        const data = await response.json();
+        closeModal(); // Schließt das Modal nach dem Absenden
+        setGroupPosts((prevPosts) => [...prevPosts, data.post]);
       } else {
         console.error("Fehler beim Speichern des Posts");
         setErrorMessage("Es gab ein Problem beim Speichern Ihres Posts.");
       }
-      const data = await response.json();
-      setGroupPosts([...groupPosts, data.post]);
-      console.log("data.post: ", data.post);
     } catch (error) {
       console.error("Fehler beim Senden der Daten", error);
       setErrorMessage("Es gab ein Problem beim Senden Ihrer Daten.");
@@ -127,17 +126,19 @@ const MitteilungForm = ({ closeModal, groupId, setGroupPosts, groupPosts }) => {
             <section className="space-y-4">
               <input
                 type="text"
+                name="title"
                 placeholder="Betreff"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={handleInputChange}
                 minLength="2"
                 maxLength="50"
                 className="w-full p-2 border border-gray-300 rounded-md"
               />
               <textarea
+                name="text"
                 placeholder="Deine Nachricht"
                 value={text}
-                onChange={(e) => setText(e.target.value)}
+                onChange={handleInputChange}
                 minLength="2"
                 maxLength="5000"
                 className="w-full h-32 p-2 border border-gray-300 rounded-md"

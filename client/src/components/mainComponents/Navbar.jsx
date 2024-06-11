@@ -1,17 +1,34 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { UserContext } from "../context/userContext.jsx";
 import { DropDownProfile } from "./DropDownProfile";
 import "./navbar.css";
-import Logo from "../assets/SupportStreetLogo.png";
+import Logo from "../assets/bubble_icon.png";
 
 const Navbar = () => {
   const { darkMode, toggleDarkMode } = useTheme();
   const { isLoggedIn } = useContext(UserContext);
   const [menuVisible, setMenuVisible] = useState(false);
+  const menuRef = useRef(null);
 
-  const toggleMenu = () => setMenuVisible(!menuVisible);
+  const toggleMenu = (event) => {
+    event.stopPropagation(); // Verhindert, dass der Klick weitergeleitet wird
+    setMenuVisible(!menuVisible);
+  };
+
+  const closeMenu = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setMenuVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", closeMenu);
+    return () => {
+      document.removeEventListener("click", closeMenu);
+    };
+  }, []);
 
   return (
     <nav
@@ -22,7 +39,7 @@ const Navbar = () => {
       <div className="logo-and-title flex items-center">
         <Link className="logo-and-title flex items-center" to="./dashboard">
           <img src={Logo} className="logo-placeholder mr-2" alt="logo" />
-          <span>Support Street</span>
+          <span>Bubblez</span>
         </Link>
       </div>
       <div className="nav-items flex items-center gap-4">
@@ -83,7 +100,7 @@ const Navbar = () => {
         </button>
 
         {menuVisible && (
-          <div className="dropdown-menu">
+          <div ref={menuRef} className="dropdown-menu">
             {isLoggedIn ? (
               <>
                 <NavLink to="/dashboard" onClick={toggleMenu}>
@@ -94,9 +111,6 @@ const Navbar = () => {
                 </NavLink>
                 <NavLink to="/market" onClick={toggleMenu}>
                   Marktplatz
-                </NavLink>
-                <NavLink to="/neighbours" onClick={toggleMenu}>
-                  Nachbarschaft
                 </NavLink>
               </>
             ) : (

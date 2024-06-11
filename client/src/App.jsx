@@ -11,8 +11,8 @@ const App = () => {
 
   return (
     <div className={`min-h-screen ${darkMode ? "dark darkThemeColor" : ""}`}>
-      <Navbar />
       <section className="flex justify-center  w-full">
+        <Navbar />
         <div className="absolute inset-0">
           <div className="fixed reusableGlobalBackground "></div>
           <div className="fixed reusableGlobalBackground "></div>
@@ -20,7 +20,7 @@ const App = () => {
           <div className=" fixed reusableGlobalBackground "></div>
         </div>
 
-        <div className={`pt-14 flex flex-col w-full relative`}>
+        <div className={` flex flex-col w-full relative`}>
           <Outlet />
         </div>
       </section>

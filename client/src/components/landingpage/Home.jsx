@@ -1,13 +1,12 @@
 import "./home.css";
-import Carousel from "./Carousel.jsx";
 import { Link } from "react-router-dom";
+import "../reuseable/styles/reusableFormComponents.css";
+import "../reuseable/styles/reusableGlobal.css";
 
 const Home = () => {
   return (
     <>
-      <section className="relative z-10">
-        <Carousel />
-      </section>
+      <section className="relative z-10"></section>
       <section className="style-test w-auto">
         <div className="color"></div>
         <div className="color"></div>
@@ -22,7 +21,7 @@ const Home = () => {
           <div className="container mt-64">
             <div className="form">
               <h2 className="text-3xl font-bold mb-4 text-center text-gray-800">
-                Herzlich Willkommen bei Support Street!
+                Herzlich Willkommen bei Bubblez!
               </h2>
               <p className="text-xl mb-6 text-center">
                 Bist du bereits Mitglied?{" "}

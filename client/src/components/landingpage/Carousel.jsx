@@ -4,8 +4,6 @@ import Carousel1 from "../assets/Carousel1.jpg";
 import Carousel2 from "../assets/Carousel2.jpg";
 import Carousel3 from "../assets/Carousel3.jpg";
 import Carousel4 from "../assets/Carousel4.jpg";
-import Carousel5 from "../assets/Carousel5.jpg";
-import Carousel6 from "../assets/Carousel6.png";
 
 const Carousel = () => {
   const [index, setIndex] = useState(0);
@@ -22,14 +20,7 @@ const Carousel = () => {
     );
   };
 
-  const images = [
-    Carousel1,
-    Carousel2,
-    Carousel3,
-    Carousel4,
-    Carousel5,
-    Carousel6,
-  ];
+  const images = [Carousel1, Carousel2, Carousel3, Carousel4];
 
   useEffect(() => {
     const intervalId = setInterval(() => {

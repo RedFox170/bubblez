@@ -1,79 +1,64 @@
+import { useNavigate } from "react-router-dom";
 import "../reuseable/styles/reusableFormComponents.css";
 import "../reuseable/styles/reusableGlobal.css";
+import zxcvbn from "zxcvbn";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const UserRegister = () => {
+  const navigate = useNavigate();
+
   const submitHandler = async (event) => {
     event.preventDefault();
     const el = event.target.elements;
 
+    const password = el.password.value;
+    const confirmPassword = el.confirmPassword.value;
+    const passwordStrength = zxcvbn(password);
+
+    console.log("Password strength score:", passwordStrength.score);
+
+    if (passwordStrength.score < 3) {
+      alert(
+        "Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort."
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Die Passwörter stimmen nicht überein.");
+      return;
+    }
+
     const body = {
-      firstName: el.firstName.value,
-      lastName: el.lastName.value,
+      userName: el.userName.value,
       email: el.email.value,
-      password: el.password.value,
-      confirmPassword: el.confirmPassword.value,
-
-      address: [
-        {
-          zip: el.zip.value,
-          street: el.street.value,
-          number: el.number.value,
-        },
-      ],
+      password,
+      confirmPassword,
     };
-    // Call getGeoCodeData with the address synchronously
-    const geoCodeData = await getGeoCodeData(body.address);
 
-    if (geoCodeData) {
-      body.geoCode = [geoCodeData[0], geoCodeData[1]];
-      // const body = {
-      //   firstName: el.firstName.value,
-      //   lastName: el.lastName.value,
-      //   email: el.email.value,
-      //   password: el.password.value,
-      //   confirmPassword: el.confirmPassword.value,
-      //   address: [body.address],
-      //   geoCode: [geoCodeData[0], geoCodeData[1]],
-      // };
-
-      // Send the registration data to the server
-      const response = await fetch("http://localhost:5500/register", {
+    try {
+      const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: {
-          "content-type": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
       });
 
-      // Process the response
-      const data = await response.json();
-      console.log({ data });
-      event.target.reset();
-    }
-  };
-
-  // Define the getGeoCodeData function
-  const getGeoCodeData = async (address) => {
-    try {
-      const queryString = `${address[0].number}+${address[0].street}+${address[0].zip}`;
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${queryString}`
-      );
-      const data = await response.json();
-
-      if (data && data.length > 0) {
-        const latitude = parseFloat(data[0].lat);
-        const longitude = parseFloat(data[0].lon);
-        // console.log("latitude:", latitude, "longitude:", longitude );
-
-        return [latitude, longitude];
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Registration successful:", data);
+        event.target.reset();
+        alert("Sie haben sich erfolgreich registriert.");
+        navigate("/login");
       } else {
-        console.error("No geocode data found.");
-        return null;
+        const error = await response.text();
+        console.error("Registration failed:", error);
+        alert("Registrierung fehlgeschlagen: " + error);
       }
     } catch (error) {
-      console.error("Error during geocoding:", error);
-      return null;
+      console.error("Registration failed:", error);
+      alert("Registrierung fehlgeschlagen: " + error.message);
     }
   };
 
@@ -93,72 +78,15 @@ const UserRegister = () => {
             <div>
               <div>
                 <label
-                  htmlFor="firstName"
+                  htmlFor="userName"
                   className="block text-sm font-medium text-gray-800"
                 >
-                  Vorname:
+                  User Name:
                 </label>
                 <input
                   type="text"
-                  name="firstName"
-                  id="firstName"
-                  className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="pt-3">
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  Nachname:
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  id="lastName"
-                  className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="pt-3">
-                <label
-                  htmlFor="street"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  Straße:
-                </label>
-                <input
-                  type="text"
-                  name="street"
-                  id="street"
-                  className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="pt-3">
-                <label
-                  htmlFor="number"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  Haus-Nr:
-                </label>
-                <input
-                  type="text"
-                  name="number"
-                  id="number"
-                  className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-
-              <div className="pt-3">
-                <label
-                  htmlFor="zip"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  PLZ:
-                </label>
-                <input
-                  type="text"
-                  name="zip"
-                  id="zip"
+                  name="userName"
+                  id="userName"
                   className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>

@@ -5,7 +5,9 @@ import {
   loginController,
   logoutController,
   registerController,
-  neighbourController
+  getUserById,
+  getUserData,
+  addFriend,
 } from "../controller/userController.js";
 import {
   authenticateUser,
@@ -14,15 +16,15 @@ import {
 
 const userRouter = express.Router();
 
-//TODO -> authorizeUser noch davor schalten
-userRouter.post("/neighbours", neighbourController);
-
 //! Wichtig: /delete/:id ist für news
 //!          /:id ist für user
 userRouter.post("/register", registerController);
 userRouter.post("/login", authenticateUser, loginController);
+userRouter.post("/addFriend/:id", authorizeUser, addFriend);
 userRouter.post("/logout", logoutController);
-userRouter.patch("/edit/:id", editUser);
+userRouter.get("/users/:id", authorizeUser, getUserById);
+userRouter.patch("/edit/:id", authorizeUser, editUser);
 userRouter.delete("/:id", authorizeUser, deleteUser);
+userRouter.get("/getUserData", authorizeUser, getUserData);
 
 export default userRouter;
