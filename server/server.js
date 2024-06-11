@@ -48,11 +48,23 @@ app.set("trust proxy", 1);
 /******************************************************
  *    Middleware
  ******************************************************/
-//! switch einbauen ... wenn in production dann cors auf die URL des Frontends setzen ansonsten auf localhost (siehe env datei)
+const allowedOrigins = [
+  "http://localhost:5173", // lokale Entwicklungsumgebung
+  "http://localhost:5500", // lokale Backend Umgebung
+  "https://bubblez.pushgang.de", // Produktions-Frontend
+  "https://bubblez.pushgang.de/server", // Produktions-Backend
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173", // URL unseres Frontends
-    credentials: true, // erlaube Cookie-Austausch zB für Authentifizierung
+    origin: function (origin, callback) {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // erlaube Cookie-Austausch z.B. für Authentifizierung
   })
 );
 
