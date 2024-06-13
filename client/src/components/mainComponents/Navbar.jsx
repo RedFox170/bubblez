@@ -44,7 +44,10 @@ const Navbar = () => {
       </div>
       <div className="nav-items flex items-center gap-4">
         {/* Dark/Light Mode Toggle */}
-        <button onClick={toggleDarkMode} className="focus:outline-none">
+        <div
+          onClick={toggleDarkMode}
+          className="focus:outline-none darkmode-toggle"
+        >
           {darkMode ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -76,13 +79,13 @@ const Navbar = () => {
               />
             </svg>
           )}
-        </button>
+        </div>
 
         {/* Profil-Dropdown, nur sichtbar wenn eingeloggt */}
         {isLoggedIn && <DropDownProfile />}
 
         {/* Burger-Menü */}
-        <button className="burger-menu" onClick={toggleMenu}>
+        <div className="burger-menu" onClick={toggleMenu}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -97,7 +100,7 @@ const Navbar = () => {
               d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"
             />
           </svg>
-        </button>
+        </div>
 
         {menuVisible && (
           <div ref={menuRef} className="dropdown-menu">

@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { postDate } from "../reuseable/fetchData.jsx";
-import "../reuseable/styles/reusableFormComponents.css";
-import "../reuseable/styles/reusableGlobal.css";
 import { useContext, useState } from "react";
 import { UserContext } from "../context/userContext.jsx";
+import "../../global.css";
 
 const UserLogin = () => {
   const { setIsLoggedIn, setUserData } = useContext(UserContext);
@@ -31,26 +30,18 @@ const UserLogin = () => {
     }
   };
   return (
-    <section className="flex  justify-center mt-64  items-center  w-full">
-      <div className="reusableGlobalBackground absolute"></div>
-      <div className="reusableGlobalBackground absolute"></div>
-      <div className="reusableGlobalBackground absolute"></div>
-      <div className="relative">
-        <div className="reusableSquare absolute" style={{ "--i": 0 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 1 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 2 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 3 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 4 }}></div>
-        <div className="reusableContainer reusableBorder">
-          <form className="reusableForm" onSubmit={login}>
+    <section className="flex justify-center items-center w-full min-h-screen p-2 sm:p-4">
+      <div className="relative w-full max-w-md">
+        <div className=" reusableBorder  p-4 sm:p-6 rounded-lg shadow-lg">
+          <form className="space-y-4" onSubmit={login}>
             <div>
-              <h2 className="mb-6 text-3xl font-bold text-center text-gray-800 dark:text-white">
+              <h2 className="mb-6 text-3xl font-bold text-center text-white">
                 Login
               </h2>
               <div className="mb-4">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                  className="block text-sm font-medium text-gray-200"
                 >
                   E-Mail:
                 </label>
@@ -60,13 +51,13 @@ const UserLogin = () => {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 mt-1 text-gray-700 border rounded-md focus:ring-blue-500 focus:border-blue-500 dark:text-gray-300 dark:border-gray-600 dark:bg-gray-800"
+                  className="w-full px-4 py-2 mt-1 bg-gray-800 border rounded-md focus:ring-gray-500 focus:border-gray-500 text-white"
                 />
               </div>
               <div className="mb-6">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                  className="block text-sm font-medium text-gray-200"
                 >
                   Passwort:
                 </label>
@@ -76,16 +67,19 @@ const UserLogin = () => {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 mt-1 text-gray-700 border rounded-md focus:ring-blue-500 focus:border-blue-500 dark:text-gray-300 dark:border-gray-600 dark:bg-gray-800"
+                  className="w-full px-4 py-2 mt-1 bg-gray-800 border rounded-md focus:ring-gray-500 focus:border-gray-500 text-white"
                 />
               </div>
-              <button type="submit" className="reusableFormBtn ">
+              <button
+                type="submit"
+                className="w-full px-4 py-2 bg-yellow-500 rounded-md text-gray-800 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+              >
                 Einloggen
               </button>
               <div className="mt-4 text-center">
                 <a
                   href="/forgot-password"
-                  className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+                  className="text-sm text-yellow-500 hover:underline"
                 >
                   Passwort vergessen?
                 </a>
@@ -93,7 +87,7 @@ const UserLogin = () => {
               <div className="mt-2 text-center">
                 <a
                   href="/register"
-                  className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+                  className="text-sm text-yellow-500 hover:underline"
                 >
                   Noch kein Konto? Registrieren
                 </a>

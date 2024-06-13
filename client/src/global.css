@@ -1,0 +1,254 @@
+/* Schriftarten */
+@font-face {
+  font-family: 'Roboto';
+  src: url('../fonts/roboto/Roboto-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../fonts/roboto/Roboto-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../fonts/open-sans/OpenSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('../fonts/open-sans/OpenSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Grundlegende Stile */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Open Sans', sans-serif;
+}
+
+body {
+  font-family: 'Roboto', 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #f5f5f5; /* Helle Schriftfarbe für den dunklen Hintergrund */
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+a {
+  color: #f5e4a0; 
+  text-decoration: none;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+a:hover {
+  color: #f7b85a;
+  text-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+  text-decoration: underline;
+}
+
+h2 {
+  font-family: 'Roboto', sans-serif;
+  color: #ffffff; /* Weiß oder eine andere helle Farbe für H2 */
+}
+
+label {
+  font-family: 'Open Sans', sans-serif;
+  color: #d1d5db; /* Helle Graufarbe für Labels */
+}
+
+/* Allgemeine Button-Stile */
+button {
+  color: #333;
+  background-color: #f5e4a0;
+}
+
+button:hover {
+  background-color: #f7b85a;
+}
+
+/* Navigation Toggle-Buttons */
+.darkmode-toggle,
+.burger-menu {
+  background-color: transparent;
+  color: #f5f5f5;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+.darkmode-toggle:hover,
+.burger-menu:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #f7b85a;
+}
+
+/* Navigation */
+.mobileNav {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 999;
+}
+
+.mobileNavLi {
+  height: 100%;
+  background-color: #334155;
+}
+
+.mobileNavLi a {
+  color: #e2e8f0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.mobileNavLi a:hover {
+  color: tomato;
+  transform: scale(1.1);
+  transition: 0.5s;
+  border-bottom: 1px solid tomato;
+}
+
+@media (min-width: 768px) {
+  .mobile\:hidden {
+    display: block !important;
+  }
+}
+
+.desktopNavLi {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.desktopNavLi a {
+  padding: 0.5rem;
+  flex-grow: 1;
+}
+
+.desktopNavLi a:hover {
+  text-decoration: underline;
+  color: tomato;
+}
+
+/* Dropdown Menü */
+.show {
+  display: block;
+  width: fit-content;
+  position: fixed;
+  top: 1rem;
+  right: 3rem;
+}
+
+.show button {
+  color: #334155;
+}
+
+/* Profil Buttons */
+.btn-profile {
+  display: flex;
+  position: relative;
+}
+
+/* Update Profil */
+.update-profile {
+  background-color: #edede9;
+  color: black;
+  font-weight: bold;
+  border: 1px solid #334155;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Mobile First */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .form h2 {
+    font-size: 2rem;
+  }
+
+  .form p {
+    font-size: 1rem;
+  }
+}
+
+/* Container-Stile */
+.reusableContainer {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  width: 100%; /* Stellt sicher, dass der Container die volle Breite nutzt */
+  box-sizing: border-box; /* Stellt sicher, dass das Padding korrekt berücksichtigt wird */
+}
+
+/* Input-Felder */
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+background-color: rgba(192, 192, 192, 0.537);
+padding: 0.5rem; 
+width: calc(100% - 1rem);
+margin: 0 auto; 
+display: block;
+}
+
+.reusableBorder {
+border: 1px solid rgba(255, 255, 255, 0.5);
+border-right: 1px solid rgba(255, 255, 255, 0.2);
+border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Formulare */
+.reusableForm {
+display: flex;
+flex-direction: column;
+}
+
+.reusableFormBtn {
+width: 100%;
+padding: 0.75rem;
+margin-top: 1rem;
+border: none;
+border-radius: 5px;
+background-color: #f5e4a0;
+color: #333;
+font-size: 1rem;
+cursor: pointer;
+transition: background-color 0.3s;
+}
+
+.reusableFormBtn
+{
+background-color: #f7b85a;
+}

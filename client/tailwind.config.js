@@ -7,14 +7,14 @@ export default {
       colors: {
         "gray-500": "#d1d5db", // Beispiel für eine benutzerdefinierte Graufarbe
       },
+      fontFamily: {
+        sans: ["Roboto", "Open Sans", "sans-serif"],
+      },
     },
     screens: {
-      mobile: "480px",
-      // => @media (min-width: 320px) and (@max-width 640px)
+      mobile: "375px", // Mindestbreite für mobile Geräte
       tablet: "641px",
-      // => @media (min-width: 641px) and  (@max-device-width: 768px)
       desktop: "768px",
-      // => @media (min-width: 768px)
       largeDesktop: "1536px",
     },
   },
