@@ -1,14 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { postDate } from "../reuseable/fetchData.jsx";
 import { useContext, useState } from "react";
 import { UserContext } from "../context/userContext.jsx";
 import "../../global.css";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const UserLogin = () => {
   const { setIsLoggedIn, setUserData } = useContext(UserContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const login = async (event) => {
     event.preventDefault();
@@ -19,25 +21,44 @@ const UserLogin = () => {
     };
 
     try {
-      const data = await postDate("login", body); // postDate ist ausgelagerter Fetch
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Wichtig, um Cookies zu senden und zu empfangen
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Something went wrong");
+      }
+
+      const data = await response.json();
 
       setUserData(data.user);
-
       setIsLoggedIn(true);
       navigate("/dashboard");
     } catch (error) {
-      navigate("/login");
+      setErrorMessage(error.message); // Setze die Fehlermeldung
     }
   };
+
   return (
     <section className="flex justify-center items-center w-full min-h-screen p-2 sm:p-4">
       <div className="relative w-full max-w-md">
-        <div className=" reusableBorder  p-4 sm:p-6 rounded-lg shadow-lg">
+        <div className="reusableBorder p-4 sm:p-6 rounded-lg shadow-lg">
           <form className="space-y-4" onSubmit={login}>
             <div>
               <h2 className="mb-6 text-3xl font-bold text-center text-white">
                 Login
               </h2>
+              {errorMessage && (
+                <div className="mb-4 text-center text-red-500">
+                  {errorMessage}
+                </div>
+              )}
               <div className="mb-4">
                 <label
                   htmlFor="email"

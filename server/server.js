@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-// import session from "express-session";
 import userRouter from "./routes/userRouter.js";
 import feedRouter from "./routes/feedRouter.js";
 import postRouter from "./routes/postRouter.js";
@@ -15,9 +14,6 @@ import marketRouter from "./routes/marketRouter.js";
 import usersRouter from "./routes/usersRouter.js";
 import imageRouter from "./cloudinary/imageRouter.js";
 
-//! request loggen mehr loggen
-
-//import userRouter from "./routes/user.js";
 dotenv.config();
 const app = express();
 
@@ -91,9 +87,21 @@ app.use("/", imageRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /******************************************************
+ *   Allgemeiner Fehlerhandler
+ * ******************************************************/
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.statusCode || 500).json({
+    message: err.message || "An unexpected error occurred",
+  });
+});
+
+/******************************************************
  *   Server starten
  * ******************************************************/
 
-app.listen(5500, () => {
-  console.log("Server läuft auf Port 5500");
+const PORT = process.env.PORT || 5500;
+app.listen(PORT, () => {
+  console.log(`Server läuft auf Port ${PORT}`);
 });

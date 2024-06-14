@@ -58,7 +58,6 @@ export const loginController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await UserModell.findOne({ email }).populate("groups");
-    //const user = await UserModell.findOne({ email });
 
     if (!user) {
       const error = new Error("Invalid credentials code001");
@@ -69,7 +68,6 @@ export const loginController = async (req, res, next) => {
     // mongoose obj zu js Objekt konvertieren
 
     // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
-
     const plainUserObj = user.toObject();
     delete plainUserObj.password;
     delete plainUserObj.groups;
@@ -83,18 +81,19 @@ export const loginController = async (req, res, next) => {
     const userForJwt = plainUserObj;
 
     // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
-    const accessToken = jwt.sign({ user: userForJwt }, process.env.JWT_SECRET);
+    const accessToken = jwt.sign({ user: userForJwt }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     // 2. sende es als cookie zurück an den client
-    res
-      .cookie("token", accessToken, {
-        httpOnly: true, // Der Cookie kann nicht durch javascript im client ausgelesen werden. Der server und browser schicken ihn nur per http hin und zurück. Das ist eine Sicherheitsmaßnahme.
+    res.cookie("token", accessToken, {
+      httpOnly: true, // Der Cookie kann nicht durch javascript im client ausgelesen werden. Der server und browser schicken ihn nur per http hin und zurück. Das ist eine Sicherheitsmaßnahme.
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    });
 
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
-      })
-
-      .send({ user: userObjOPW });
+    // Sende die Benutzerdaten (ohne Passwort) zurück an den Client
+    res.status(200).json({ user: userObjOPW });
   } catch (error) {
     next(error);
   }
