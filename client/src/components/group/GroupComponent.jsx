@@ -31,8 +31,8 @@ const GroupComponent = () => {
         const data = await response.json();
         setSelectedGroup(data);
         setGroupPosts(data.groupPosts || []);
-        console.log("Abruf der Gruppe:", data);
-        console.log("Gruppen-Posts:", data.groupPosts || []);
+        /* console.log("Abruf der Gruppe:", data);
+        console.log("Gruppen-Posts:", data.groupPosts || []); */
       } else {
         console.error("Fehler beim Laden der Gruppe:", await response.text());
       }
@@ -164,26 +164,16 @@ const GroupComponent = () => {
   };
 
   return (
-    <section className="relative flex flex-col min-h-screen  ">
-      {/* Fest positionierter Hintergrund */}
-      <div className="absolute inset-0">
-        <div className="fixed reusableGlobalBackground "></div>
-        <div className="fixed reusableGlobalBackground "></div>
-        <div className="fixed reusableGlobalBackground "></div>
-      </div>
-
-      {/* Scrollbarer Inhalts-Container */}
+    <section className="relative mt-20 flex flex-col min-h-screen">
       <div className="reusableBlur w-full h-full overflow-auto min-h-screen">
-        {/* Container für die gesamte Gruppenansicht, einschließlich Gruppeninfos und Kommentaren */}
-        <div className="mx-auto flex flex-col items-center">
+        <div className="mx-auto flex flex-col items-center w-full max-w-4xl">
           <Link to={`/groups`}>
             <p className="reusableFormBtn mb-4 text-center">
               Zurück zur Gruppenübersicht
             </p>
           </Link>
 
-          {/* Verwendung der reusableContainer Klasse für den Glassmorphismus-Stil */}
-          <div className="reusableContainer  max-w-4xl ">
+          <div className="reusableContainer w-full p-4">
             <h3 className="reusableH3 text-xl font-semibold mb-4 pb-2 border-b-2 w-full px-4 py-2 mt-5">
               {selectedGroup.title}
             </h3>
@@ -265,16 +255,14 @@ const GroupComponent = () => {
               </div>
             )}
 
-            {/* Tags und Privatsphäre-Status */}
             <div className="p-2 flex justify-between">
               <span>{selectedGroup.tags}</span>
             </div>
           </div>
         </div>
 
-        {/* Sektion für neue Nachricht */}
-        <section onClick={openModal} className=" my-4">
-          <div className="reusableHeaderBar mx-auto max-w-3xl p-4 bg-white bg-opacity-10 backdrop-blur-lg rounded-lg shadow-lg flex items-center space-x-4">
+        <section onClick={openModal} className="relative mt-3 flex flex-col">
+          <div className="reusableHeaderBar p-4 bg-white bg-opacity-10 backdrop-blur-lg rounded-lg shadow-lg flex items-center space-x-4">
             <img
               src={Avatar}
               alt="Profilbild Nutzer"
@@ -282,7 +270,7 @@ const GroupComponent = () => {
             />
             <input
               type="text"
-              className="flex-grow  border border-white-500 p-2 rounded-lg focus:ring-2"
+              className="flex-grow border border-white-500 p-2 rounded-lg focus:ring-2"
               placeholder="Schreib ein Kommentar..."
             />
           </div>
@@ -298,8 +286,7 @@ const GroupComponent = () => {
           </Modal>
         )}
 
-        {/* Container für die Post-Karten (Kommentare) innerhalb des gleichen scrollbaren Containers */}
-        <div className="mt-4 px-4 md:px-0 max-w-3xl mx-auto">
+        <div className="mx-auto flex flex-col items-center w-full max-w-4xl">
           {groupPosts
             .slice()
             .reverse()

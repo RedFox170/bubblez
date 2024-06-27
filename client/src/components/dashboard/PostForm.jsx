@@ -81,7 +81,7 @@ const PostForm = ({ setPosts, user }) => {
         </div>
       </div>
       <textarea
-        className="w-full p-2 border rounded-md"
+        className="w-full p-2 text-black border rounded-md font"
         placeholder="Was machst du gerade?"
         value={content}
         onChange={(e) => setContent(e.target.value)}
@@ -116,7 +116,7 @@ const PostForm = ({ setPosts, user }) => {
       )}
       <button
         type="submit"
-        className="mt-2 px-4 py-2 border border-gray-300 rounded-md bg-black-500 text-black hover:bg-gray-600"
+        className="mt-2 px-4 py-2 border border-gray-300 rounded-md bg-black-500 text-white hover:bg-gray-600"
       >
         Posten
       </button>

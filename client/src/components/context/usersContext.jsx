@@ -1,26 +1,46 @@
-//! Wird der Context überhaupt noch benötigt?
-
-import { createContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react";
+import { UserContext } from "./userContext";
+import apiClient from "./apiClient.js";
 
 export const UsersContext = createContext();
 
 export const UsersProvider = ({ children }) => {
   const [usersData, setUsersData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { setIsLoggedIn } = useContext(UserContext);
 
   useEffect(() => {
-    fetchUsers();
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("token="));
+    if (token) {
+      fetchUsers();
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:5500/users", {
-        credentials: "include",
+      const response = await apiClient("/users", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
       if (response.ok) {
         const data = await response.json();
         setUsersData(data);
+      } else if (response.status === 401) {
+        handleLogout();
       } else {
         throw new Error("Failed to fetch users");
       }
@@ -29,14 +49,19 @@ export const UsersProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const clearUsersData = () => {
-    setUsersData([]); // Setze die Userdaten zurück
-  };
+  const handleLogout = useCallback(() => {
+    setUsersData([]);
+    setIsLoggedIn(false);
+    localStorage.clear();
+    window.location.href = "/login";
+  }, [setIsLoggedIn]);
 
   return (
-    <UsersContext.Provider value={{ usersData, isLoading, clearUsersData }}>
+    <UsersContext.Provider
+      value={{ usersData, isLoading, clearUsersData: handleLogout }}
+    >
       {children}
     </UsersContext.Provider>
   );

@@ -9,7 +9,7 @@ export const CustomCheckbox = ({ isChecked, onToggle, label }) => (
       {isChecked && <div className="w-3 h-3 bg-white rounded-full"></div>}
     </div>
     <label
-      className="ml-8 text-sm font-medium text-gray-800 cursor-pointer"
+      className="ml-2 text-sm font-medium text-gray-100 cursor-pointer"
       onClick={onToggle}
     >
       {label}

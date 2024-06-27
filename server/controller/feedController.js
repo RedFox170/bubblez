@@ -20,7 +20,6 @@ export const getFeed = async (req, res) => {
         path: "comments.user",
         select: "userName image",
       });
-    console.log("ownPosts im feedController", ownPosts);
 
     // Beiträge von Freunden
     const user = await UserModel.findById(userId).populate(
@@ -35,11 +34,10 @@ export const getFeed = async (req, res) => {
         path: "comments.user",
         select: "userName image",
       });
-    console.log("friendsPosts im feedController", friendsPosts);
 
     // Beiträge aus Gruppen
     const groups = await GroupsModel.find({ members: userId });
-    console.log("groups im feedController", groups);
+
     const groupPosts = await PostModel.find({
       user: { $in: groups.map((group) => group.members).flat() },
     })
@@ -48,13 +46,11 @@ export const getFeed = async (req, res) => {
         path: "comments.user",
         select: "userName image",
       });
-    console.log("groupPosts im feedController", groupPosts);
 
     // Zusammenführen und sortieren
     const allPosts = [...ownPosts, ...friendsPosts, ...groupPosts];
-    console.log("allPosts im feedController", allPosts);
+
     const sortedPosts = allPosts.sort((a, b) => b.createdAt - a.createdAt);
-    console.log("sortedPosts im feedController", sortedPosts);
 
     res.status(200).json(sortedPosts);
   } catch (error) {

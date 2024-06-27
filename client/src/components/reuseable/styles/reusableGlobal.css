@@ -27,48 +27,45 @@
     display: flex;
     flex-direction: column;
    
-    transition: transform 0.3s ease-in-out, 
 }
 
-.reusableBorder:hover {
-    transform: scale(1.02);
-    background: rgba(255, 255, 255, 0.25);
-}
 
 /* --------------  Background  ------------------ */
 
 .reusableGlobalBackground {
-    filter: blur(200px);
+    filter: blur(150px);
 }
 
 section .reusableGlobalBackground:nth-child(1){
     width: 600px;
     height: 600px;
-    background: #9b1499;
+    background: #DE89BE; /* Helles Grün */
 }
 
 section .reusableGlobalBackground:nth-child(2){
     bottom: -150px;
     left: 100px;
-    width: 300px;
-    height: 300px;
-    background: #181fe7;
+    width: 500px;
+    height: 500px;
+    background: #568203; /* Mittelgrün */
 }
 
 section .reusableGlobalBackground:nth-child(3){
     bottom: 150px;
     right: 100px;
+    width: 300px;
+    height: 300px;
+    background: #f38212; /* Komplementärfarbe (Highlight) */
+}
+
+section .reusableGlobalBackground:nth-child(4){
+    top: 150px;
+    right: 100px;
     width: 600px;
     height: 400px;
-    background: #f3b712;
-    }
-    section .reusableGlobalBackground:nth-child(4){
-        top: 150px;
-        right: 100px;
-        width: 600px;
-        height: 400px;
-        background: #12b7f3;
-        }
+    background: #4B9C4A; /* Dunkelgrün */
+}
+
 /* --------------  Background  ------------------ */
 
 .reusableGlobalBackground2 {

@@ -2,32 +2,25 @@ import "./home.css";
 import { Link } from "react-router-dom";
 import "../reuseable/styles/reusableFormComponents.css";
 import "../reuseable/styles/reusableGlobal.css";
+import Bubblez from "../mainComponents/styling/Bubblez";
 
 const Home = () => {
   return (
-    <>
+    <div className="home-container">
+      <Bubblez />
       <section className="relative z-10"></section>
       <section className="style-test w-auto">
-        <div className="color"></div>
-        <div className="color"></div>
-        <div className="color"></div>
         <div className="box">
-          <div className="square" style={{ "--i": 0 }}></div>
-          <div className="square" style={{ "--i": 1 }}></div>
-          <div className="square" style={{ "--i": 2 }}></div>
-          <div className="square" style={{ "--i": 3 }}></div>
-          <div className="square" style={{ "--i": 4 }}></div>
-
-          <div className="container mt-64">
+          <div className="container mx-auto max-w-lg p-6">
             <div className="form">
-              <h2 className="text-3xl font-bold mb-4 text-center text-gray-800">
+              <h2 className="text-3xl font-bold mb-4 text-center">
                 Herzlich Willkommen bei Bubblez!
               </h2>
               <p className="text-xl mb-6 text-center">
                 Bist du bereits Mitglied?{" "}
                 <Link
                   to="/login"
-                  className="text-blue-600 hover:underline block custom-text-shadow tracking-wide font-bold"
+                  className="block custom-text-shadow tracking-wide font-bold"
                 >
                   Einloggen
                 </Link>
@@ -36,7 +29,7 @@ const Home = () => {
                 Bist du neu hier?{" "}
                 <a
                   href="/register"
-                  className="text-blue-600 hover:underline block tracking-wide font-bold custom-text-shadow"
+                  className="block tracking-wide font-bold custom-text-shadow"
                 >
                   Registrieren
                 </a>
@@ -45,7 +38,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 

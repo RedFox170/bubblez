@@ -5,7 +5,7 @@
 
 ### neue Baustellen
 - [x] Like Button defekt
-- [ ] env switch einbauen
+- [x] env switch einbauen
 - [ ] Feed sollte soweit klappen! Gruppenbeiträge werden noch nicht gerendert -> ich denke es liegt an der inkonsistenten schreibweise (groupsbeiträge sind anders als Post beiträge) | Beiträge werden doppelt gerende
 - [x] Logout löscht die Cookies/LS nicht mehr (sieht so aus als würde er den token löschen und kurz danach ist es wieder da)
 
@@ -23,10 +23,10 @@
 - [x] Blur effekt auf marktitems
 - [x] Freund*in Hinzufügen Button + Anzeigen Liste mit freunden
 - [x] Cloudinary in feed und gruppen ergänzen
-- [ ] Cloudinary Profilbild 
+- [x] Cloudinary Profilbild 
 - [ ] Freunde Hinzufügen -> Mit Annehmen funktion so dass nicht oneWay freundschaft gibt
 - [ ] Nutzer Beiträge (feed)
-- [ ] bilder upload für Gruppenbeiträge, Avatar; Feed-Beiträge
+- [x] bilder upload für Gruppenbeiträge, Avatar; Feed-Beiträge
 - [ ] Grobe Navigation im Feed
 - [ ] Landingpage soll Vision der App transportieren
 Gruppe muss beim verlassen auch die group vom user entfernen.

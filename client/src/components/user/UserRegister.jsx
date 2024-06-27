@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import "../reuseable/styles/reusableFormComponents.css";
-import "../reuseable/styles/reusableGlobal.css";
+import "../../global.css";
 import zxcvbn from "zxcvbn";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 
 const UserRegister = () => {
@@ -42,6 +42,7 @@ const UserRegister = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(body),
       });
 
@@ -63,78 +64,75 @@ const UserRegister = () => {
   };
 
   return (
-    <section className="flex  justify-center items-center mt-32 w-full">
-      <div className="reusableGlobalBackground absolute"></div>
-      <div className="reusableGlobalBackground absolute"></div>
-      <div className="reusableGlobalBackground absolute"></div>
-      <div className="relative">
-        <div className="reusableSquare absolute" style={{ "--i": 0 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 1 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 2 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 3 }}></div>
-        <div className="reusableSquare absolute" style={{ "--i": 4 }}></div>
-        <div className="reusableContainer reusableBorder mt-12 shadow-md">
-          <form className="reusableForm" onSubmit={submitHandler}>
+    <section className="flex justify-center items-center w-full min-h-screen p-2 sm:p-4">
+      <div className="relative w-full max-w-md">
+        <div className="reusableBorder  shadow-md">
+          <form className="space-y-4" onSubmit={submitHandler}>
             <div>
-              <div>
-                <label
-                  htmlFor="userName"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  User Name:
-                </label>
-                <input
-                  type="text"
-                  name="userName"
-                  id="userName"
-                  className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="pt-3">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  E-Mail:
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="pt-3">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  Passwort:
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="pt-3">
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-800"
-                >
-                  Passwort bestätigen:
-                </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  id="confirmPassword"
-                  className="reusableInput mt-1  p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
+              <h2 className="mb-6 text-3xl font-bold text-center text-white">
+                Registrieren
+              </h2>
+              <label
+                htmlFor="userName"
+                className="block text-sm font-medium text-gray-200"
+              >
+                Benutzername:
+              </label>
+              <input
+                type="text"
+                name="userName"
+                id="userName"
+                className="w-full px-4 py-2 mt-1 bg-gray-800 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-white"
+              />
             </div>
-
-            <button className="reusableFormBtn ">Abschicken</button>
+            <div className="pt-3">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-200"
+              >
+                E-Mail:
+              </label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                className="w-full px-4 py-2 mt-1 bg-gray-800 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-white"
+              />
+            </div>
+            <div className="pt-3">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-200"
+              >
+                Passwort:
+              </label>
+              <input
+                type="password"
+                name="password"
+                id="password"
+                className="w-full px-4 py-2 mt-1 bg-gray-800 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-white"
+              />
+            </div>
+            <div className="pt-3">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-200"
+              >
+                Passwort bestätigen:
+              </label>
+              <input
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                className="w-full px-4 py-2 mt-1 bg-gray-800 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-white"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full px-4 py-2 mt-4 bg-yellow-500 rounded-md text-gray-800 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+            >
+              Abschicken
+            </button>
           </form>
         </div>
       </div>

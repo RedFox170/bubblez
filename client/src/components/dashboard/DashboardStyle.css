@@ -1,20 +1,7 @@
-/* --------------  Buttons  ------------------ */
-
-
-/* --------------  Buttons  ------------------ */
-.reusableBox {
-    
-  
-
-}
-
-
-
 /* --------------  Blur  ------------------ */
 .reusableBlur {
     backdrop-filter: blur(5px);
 }
-
 
 /* --------------  Container  ------------------ */
 .reusableContainer {

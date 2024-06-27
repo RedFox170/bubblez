@@ -6,3 +6,9 @@ node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"
 
 
 und das dann bei .env in die JWT Secret einfügen
+
+## Packete nach dem Produktions Onlinestellen 
+
+npm install zxcvbn
+npm install express-fileupload
+npm install bcrypt

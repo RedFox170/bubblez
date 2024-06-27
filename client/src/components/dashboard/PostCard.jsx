@@ -90,8 +90,8 @@ const PostCard = ({ post }) => {
               alt="Profilbild"
               className="h-10 w-10 rounded-full"
             />
-            <div className="text-base ml-4 font-semibold text-gray-900 dark:text-gray-100">
-              {postUser.userName}
+            <div>
+              <span className="font-semibold ml-2">{postUser.userName}</span>
             </div>
           </aside>
         </Link>
@@ -109,16 +109,14 @@ const PostCard = ({ post }) => {
           className="mb-4 w-full object-cover rounded-lg shadow-lg"
         />
       )}
-      <p className="mb-4 text-xl text-gray-700 dark:text-gray-400">
-        {post.text}
-      </p>
+      <p className="mb-4  dark:text-gray-400">{post.text}</p>
       <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-        <button
+        <span
           type="button"
           className="flex items-center"
           onClick={handleLikeClick}
         >
-          <span className="mr-2">
+          <span className="mr-2 text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -134,14 +132,14 @@ const PostCard = ({ post }) => {
               />
             </svg>
           </span>
-          <span>{likes.length}</span>
-        </button>
-        <button
+          <span className="text-white">{likes.length}</span>
+        </span>
+        <span
           onClick={toggleCommentsVisibility}
-          className="text-gray-600 hover:text-gray-800"
+          className="text-white hover:text-gray-200 cursor-pointer"
         >
           Alle {comments.length} Kommentare anzeigen
-        </button>
+        </span>
       </div>
       {showComments && (
         <div className="mt-2">
@@ -163,7 +161,7 @@ const PostCard = ({ post }) => {
                     to={`/profile/${comment.user._id}`}
                     className="flex items-center"
                   >
-                    <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    <span className="text-base font-semibold ">
                       {comment.user
                         ? `${comment.user.userName}`
                         : "Ehemaliger Nutzer"}{" "}
@@ -186,7 +184,7 @@ const PostCard = ({ post }) => {
         <img
           src={userData.image || Avatar}
           alt="Profilbild"
-          className="h-10 w-10 rounded-full"
+          className="h-10 w-10 rounded-full mr-2"
         />
         <input
           type="text"
@@ -196,7 +194,7 @@ const PostCard = ({ post }) => {
           onChange={handleReplyChange}
           style={{ width: "70%" }}
         />
-        <button className="w-3/20 ml-2" onClick={submitReply}>
+        <span className="w-3/20 ml-2" onClick={submitReply}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -211,7 +209,7 @@ const PostCard = ({ post }) => {
               d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
             />
           </svg>
-        </button>
+        </span>
       </div>
     </div>
   );

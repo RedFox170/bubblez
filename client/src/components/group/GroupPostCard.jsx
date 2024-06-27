@@ -86,7 +86,7 @@ const GroupPostCard = ({ post }) => {
   const profilImg = () => (user.image ? user.image : Avatar);
 
   return (
-    <div className="reusableBorder mt-4 p-4 flex flex-col w-full">
+    <div className="reusableBorder mt-4 flex flex-col w-full">
       <div className="flex justify-between items-center mb-4">
         <Link
           to={`/profile/${post.commenter._id}`}
@@ -113,12 +113,10 @@ const GroupPostCard = ({ post }) => {
           className="mb-4 w-full object-cover rounded-lg shadow-lg"
         />
       )}
-      <p className="mb-4 text-base font-semibold text-gray-900 dark:text-gray-100">
+      <p className="mb-4 text-base font-semibold text-gray-100 dark:text-gray-100">
         {post.title}
       </p>
-      <p className="mb-4 text-xl text-gray-700 dark:text-gray-400">
-        {post.text}
-      </p>
+      <p className="mb-4 text-xl">{post.text}</p>
 
       <div className="flex justify-between items-center pt-4 border-t border-gray-200">
         <button
@@ -146,7 +144,7 @@ const GroupPostCard = ({ post }) => {
         </button>
         <button
           onClick={toggleCommentsVisibility}
-          className="text-gray-600 hover:text-gray-800"
+          className="text-gray-300 hover:text-gray-800"
         >
           Alle {comments.length} Kommentare anzeigen
         </button>

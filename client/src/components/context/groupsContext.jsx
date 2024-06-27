@@ -17,21 +17,16 @@ ALLGEMEIN:
 */
 
 export const GroupsProvider = ({ children }) => {
-  // Beim Laden aus dem localStorage die Daten parsen
   const savedGroups = JSON.parse(localStorage.getItem("groupsData"));
 
-  const [groupsData, setGroupsData] = useState(savedGroups || null);
+  const [groupsData, setGroupsData] = useState(savedGroups || []);
   const [isLoading, setIsLoading] = useState(false);
 
-  // console.log("groupData in groupContext:", groupsData);
-
   useEffect(() => {
-    if (groupsData !== null) {
+    if (groupsData.length > 0) {
       localStorage.setItem("groupsData", JSON.stringify(groupsData));
     }
   }, [groupsData]);
-
-  // console.log({ groupsData });
 
   return (
     <GroupsContext.Provider
