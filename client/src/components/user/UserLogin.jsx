@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/userContext.jsx";
 import "../../global.css";
 
@@ -12,6 +12,10 @@ const UserLogin = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  useEffect(() => {
+    console.log("API_URL:", API_URL);
+  }, []);
+
   const login = async (event) => {
     event.preventDefault();
     const el = event.target.elements;
@@ -19,6 +23,8 @@ const UserLogin = () => {
       email: el.email.value,
       password: el.password.value,
     };
+
+    console.log("Sending login request to:", API_URL);
 
     try {
       const response = await fetch(`${API_URL}/login`, {
@@ -41,7 +47,8 @@ const UserLogin = () => {
       setIsLoggedIn(true);
       navigate("/dashboard");
     } catch (error) {
-      setErrorMessage(error.message); // Setze die Fehlermeldung
+      console.error("Login error:", error.message);
+      setErrorMessage(error.message);
     }
   };
 

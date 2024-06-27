@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import PostForm from "./PostForm";
 import PostList from "./PostList";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
+import apiClient from "../context/apiClient.js";
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -13,9 +12,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await fetch(`${API_URL}/getUserData`, {
+        const userRes = await apiClient("/getUserData", {
           method: "GET",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -28,9 +26,8 @@ const Dashboard = () => {
         const userData = await userRes.json();
         setUserData(userData);
 
-        const feedRes = await fetch(`${API_URL}/feed`, {
+        const feedRes = await apiClient("/feed", {
           method: "GET",
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -41,10 +38,7 @@ const Dashboard = () => {
         }
 
         const feedData = await feedRes.json();
-        console.log("Fetched posts:", feedData);
 
-        // Verhindern doppelter Einträge
-        /*  Ein Set ist eine Sammlung von Werten, bei der jeder Wert nur einmal vorkommen kann. Durch die Übergabe des Arrays mit den IDs an new Set([...]) werden doppelte IDs entfernt */
         const uniquePosts = Array.from(
           new Set(feedData.map((post) => post._id))
         ).map((id) => {

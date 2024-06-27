@@ -27,6 +27,28 @@
   font-style: normal;
 }
 
+/* Standard Schriftgröße für <p> */
+p {
+  font-size: 1rem; /* Standardgröße */
+}
+
+/* Schriftgröße bei Bildschirmbreiten unter 700px */
+@media (min-width: 1200px) {
+  p {
+    font-size: 1.2rem; /* Kleinere Größe für kleinere Bildschirme */
+  }
+}
+
+/* Schriftgröße bei Bildschirmbreiten unter 700px */
+@media (max-width: 800px) {
+  p {
+    font-size: 0.875rem; /* Kleinere Größe für kleinere Bildschirme */
+  }
+}
+
+
+
+
 /* Grundlegende Stile */
 * {
   margin: 0;
@@ -70,15 +92,7 @@ label {
   color: #d1d5db; /* Helle Graufarbe für Labels */
 }
 
-/* Allgemeine Button-Stile */
-button {
-  color: #333;
-  background-color: #f5e4a0;
-}
 
-button:hover {
-  background-color: #f7b85a;
-}
 
 /* Navigation Toggle-Buttons */
 .darkmode-toggle,

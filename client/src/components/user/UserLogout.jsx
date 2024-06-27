@@ -8,9 +8,10 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
 const UserLogout = () => {
   const { setIsLoggedIn } = useContext(UserContext);
   const { setGroupsData } = useContext(GroupsContext);
-  const { clearUsersData } = useContext(UsersContext);
+  const { clearUsersData, handleLogout } = useContext(UsersContext);
   const navigate = useNavigate();
   console.log("UserLogout.jsx");
+
   useEffect(() => {
     const logout = async () => {
       try {
@@ -34,11 +35,13 @@ const UserLogout = () => {
         }
       } catch (error) {
         console.error("Logout error:", error);
+        handleLogout();
+        navigate("/login");
       }
     };
 
     logout();
-  }, [setIsLoggedIn, setGroupsData, clearUsersData, navigate]);
+  }, [setIsLoggedIn, setGroupsData, clearUsersData, handleLogout, navigate]);
 
   return null; // Kein visueller Inhalt
 };

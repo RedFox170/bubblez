@@ -97,7 +97,7 @@ const GroupForm = () => {
   };
 
   return (
-    <section className="flex justify-center items-center h-screen w-full relative">
+    <section className="relative mt-20 flex flex-col min-h-screen">
       <div className="reusableSquareContainer absolute inset-0 flex items-center justify-center">
         <div
           className="reusableBubble"
@@ -105,7 +105,7 @@ const GroupForm = () => {
             "--i": 0,
             position: "absolute",
             top: "250px",
-            right: "100px",
+            right: "500px",
             width: "200px",
             height: "200px",
             zIndex: 2,
@@ -117,7 +117,7 @@ const GroupForm = () => {
             "--i": 1,
             position: "absolute",
             top: "220px",
-            left: "120px",
+            left: "420px",
             width: "120px",
             height: "120px",
             zIndex: 2,
@@ -140,7 +140,7 @@ const GroupForm = () => {
           style={{
             "--i": 3,
             position: "absolute",
-            bottom: "100px",
+            bottom: "400px",
             right: "100px",
             width: "250px",
             height: "250px",
@@ -152,8 +152,8 @@ const GroupForm = () => {
           style={{
             "--i": 4,
             position: "absolute",
-            bottom: "150px",
-            left: "100px",
+            bottom: "480px",
+            left: "500px",
             width: "150px",
             height: "150px",
             zIndex: 2,
@@ -164,13 +164,13 @@ const GroupForm = () => {
         <div className="reusableContainer reusableFormContainer reusableBorder mt-12 p-11 shadow-md relative flex justify-center items-center">
           <form className="reusableForm" onSubmit={handleSubmit}>
             <div>
-              <h2 className="text-xl font-bold mb-4 text-gray-800">
+              <h2 className="text-xl font-bold mb-4">
                 Erstelle eine neue Gruppe
               </h2>
               <div className="mb-4">
                 <label
                   htmlFor="title"
-                  className="block text-sm font-medium text-gray-800"
+                  className="block text-sm font-medium text-gray-100"
                 >
                   Name der Gruppe
                 </label>
@@ -180,14 +180,14 @@ const GroupForm = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="reusableInput mt-1 p-2 text-gray-800 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                  className="reusableInput mt-1 p-2 text-gray-100 block w-full border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                 />
                 {errorMessage && <p className="text-red-500">{errorMessage}</p>}
               </div>
               <div className="mb-4">
                 <label
                   htmlFor="text"
-                  className="block text-sm font-medium text-gray-800"
+                  className="block text-sm font-medium text-gray-100"
                 >
                   Gruppenbeschreibung
                 </label>
@@ -208,7 +208,7 @@ const GroupForm = () => {
               <div className="mb-4">
                 <label
                   htmlFor="image"
-                  className="block text-sm font-medium text-gray-800"
+                  className="block text-sm font-medium text-gray-100"
                 >
                   Bild hochladen
                 </label>
@@ -223,7 +223,7 @@ const GroupForm = () => {
               <div className="mb-4">
                 <label
                   htmlFor="tags"
-                  className="block text-sm font-medium text-gray-800"
+                  className="block text-sm font-medium text-gray-100"
                 >
                   Kategorie
                 </label>

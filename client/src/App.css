@@ -33,17 +33,11 @@ html, body, #root {
     align-items: center;
     width: 100%;
     height: 100%;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   
-  /* Apply padding only on small screens */
-  @media (min-width: 640px) {
-    .content-container {
-      padding-left: 0;
-      padding-right: 0;
-    }
-  }
+ 
   
   /* Hintergrund */
   .new-dark-mode {

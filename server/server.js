@@ -37,7 +37,9 @@ mongoose
   .then(() => console.log(`MongoDB connected`))
   .catch((error) => console.log(error, "Database did not connect! ☹️❌"));
 
-mongoose.connection.on("error", () => console.log);
+mongoose.connection.on("error", (error) => {
+  console.log("Mongoose connection error: ", error);
+});
 
 app.set("trust proxy", 1);
 
@@ -91,7 +93,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
  * ******************************************************/
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error("Error handler triggered:");
+  console.error("Error stack:", err.stack);
+  console.error("Error message:", err.message);
+  console.error("Error status code:", err.statusCode);
   res.status(err.statusCode || 500).json({
     message: err.message || "An unexpected error occurred",
   });

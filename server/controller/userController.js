@@ -53,7 +53,6 @@ export const registerController = async (req, res) => {
 /******************************************************
  *    loginController
  ******************************************************/
-
 export const loginController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -65,19 +64,17 @@ export const loginController = async (req, res, next) => {
       throw error;
     }
 
-    // mongoose obj zu js Objekt konvertieren
-
-    // Hier das `user`-Objekt  festlegen, bevor es in das JWT eingefügt wird
+    // Konvertiere Mongoose-Objekt zu JavaScript-Objekt
     const plainUserObj = user.toObject();
     delete plainUserObj.password;
     delete plainUserObj.groups;
     delete plainUserObj.marketItems;
 
-    // Nur PW gelöscht -> frontend userDaten
+    // Nur Passwort gelöscht -> Benutzerobjekt für das Frontend
     const userObjOPW = user.toObject();
     delete userObjOPW.password;
 
-    // kleines Obj für den JWT Token (im Cookie)
+    // Kleines Objekt für den JWT-Token (im Cookie)
     const userForJwt = plainUserObj;
 
     // Generiere ein JWT mit dem `userForJwt`-Objekt als Payload
@@ -85,16 +82,21 @@ export const loginController = async (req, res, next) => {
       expiresIn: "1h",
     });
 
-    // 2. sende es als cookie zurück an den client
+    // Setze das Token als Cookie im Antwort-Header
     res.cookie("token", accessToken, {
-      httpOnly: true, // Der Cookie kann nicht durch javascript im client ausgelesen werden. Der server und browser schicken ihn nur per http hin und zurück. Das ist eine Sicherheitsmaßnahme.
+      httpOnly: true, // Der Cookie kann nicht durch JavaScript im Client ausgelesen werden. Der Server und Browser schicken ihn nur per HTTP hin und zurück. Das ist eine Sicherheitsmaßnahme.
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
     });
 
+    // Logging für erfolgreiche Anmeldung
+    console.log(`User logged in: ${email}`);
+
     // Sende die Benutzerdaten (ohne Passwort) zurück an den Client
     res.status(200).json({ user: userObjOPW });
   } catch (error) {
+    // Logging für Fehlerfälle
+    console.error(`Error during login: ${error.message}`);
     next(error);
   }
 };

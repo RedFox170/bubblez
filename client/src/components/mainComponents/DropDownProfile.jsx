@@ -1,15 +1,14 @@
-import { useRef, useState, useEffect, useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext.jsx";
 import { GroupsContext } from "../context/groupsContext.jsx";
 import { UsersContext } from "../context/usersContext.jsx";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5500";
+import apiClient from "../context/apiClient.js";
 
-export const DropDownProfile = () => {
+const DropDownProfile = () => {
   const [hideProfile, setHideProfile] = useState(true);
-
   const { setIsLoggedIn } = useContext(UserContext);
-  const { setGroupsData } = useContext(GroupsContext);
+  const { setGroupsData } = useContext(GroupsContext) || {};
   const { clearUsersData } = useContext(UsersContext);
   const navigate = useNavigate();
 
@@ -53,13 +52,14 @@ export const DropDownProfile = () => {
   const handleLogout = async () => {
     console.log("Logout clicked");
     try {
-      const response = await fetch(`${API_URL}/logout`, {
+      const response = await apiClient("/logout", {
         method: "POST",
-        credentials: "include",
       });
 
       if (response.ok) {
-        setGroupsData([]);
+        if (setGroupsData) {
+          setGroupsData([]);
+        }
         clearUsersData();
         setIsLoggedIn(false);
         localStorage.clear();
@@ -95,24 +95,26 @@ export const DropDownProfile = () => {
         <div className="absolute w-fit top-12 right-0 bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden"></div>
       ) : (
         <div
-          className="absolute w-48 top-12 right-0 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2"
+          className="absolute w-48 top-12 right-0 shadow-lg dropdown-menu rounded-lg py-2"
           ref={profileRef}
         >
           <ul className="flex flex-col">
-            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <li className=" dark:hover:bg-gray-700">
               <NavLink to={`/profile/${userId}`} className="block">
                 Profile anzeigen
               </NavLink>
             </li>
-            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <li className="  dark:hover:bg-gray-700">
               <NavLink to="/updateprofile" className="block">
                 Profile bearbeiten
               </NavLink>
             </li>
-            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              Settings
+            <li className="  dark:hover:bg-gray-700">
+              <NavLink to="/" className="block">
+                Einstellungen
+              </NavLink>
             </li>
-            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <li className="  dark:hover:bg-gray-700">
               <button onClick={handleLogout} className="block w-full text-left">
                 Logout
               </button>

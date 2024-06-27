@@ -109,9 +109,9 @@ const PostCard = ({ post }) => {
           className="mb-4 w-full object-cover rounded-lg shadow-lg"
         />
       )}
-      <p className="mb-4 text-xl dark:text-gray-400">{post.text}</p>
+      <p className="mb-4  dark:text-gray-400">{post.text}</p>
       <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-        <button
+        <span
           type="button"
           className="flex items-center"
           onClick={handleLikeClick}
@@ -133,7 +133,7 @@ const PostCard = ({ post }) => {
             </svg>
           </span>
           <span className="text-white">{likes.length}</span>
-        </button>
+        </span>
         <span
           onClick={toggleCommentsVisibility}
           className="text-white hover:text-gray-200 cursor-pointer"
@@ -184,7 +184,7 @@ const PostCard = ({ post }) => {
         <img
           src={userData.image || Avatar}
           alt="Profilbild"
-          className="h-10 w-10 rounded-full"
+          className="h-10 w-10 rounded-full mr-2"
         />
         <input
           type="text"
