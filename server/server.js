@@ -51,6 +51,8 @@ const allowedOrigins = [
   "http://localhost:5500", // lokale Backend Umgebung
   "https://bubblez.pushgang.de", // Produktions-Frontend
   "https://bubblez.pushgang.de/server", // Produktions-Backend
+  "https://bubblez.netlify.app", // Netlify-Deployment
+  "https://bubblez.netlify.app/server", // Netlify-Deployment
 ];
 
 app.use(
