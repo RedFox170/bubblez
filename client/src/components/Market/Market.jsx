@@ -21,13 +21,11 @@ const Market = () => {
 
   const { marketData, setMarketData } = useContext(MarketContext);
 
-  //! BUG WARUM wird USEFFECT nicht ausgelöst
   useEffect(() => {
     const getMarketItems = async () => {
       try {
         console.log("TEST TEST TEST TES TESTTT");
-        //todo Nach dem fetchen aller Market items, filtern nach PLZ oder Stadt (zB. alle PLZs von Berlin) fehlen
-        //todo Alternativ -> Umkreissuche -> Artikel in 100m/250m/500m etc
+
         const response = await fetch(`${API_URL}/getAllMarketItems`, {
           credentials: "include",
         });
@@ -108,11 +106,10 @@ const Market = () => {
     console.log(filteredMarketItems);
   }
 
-  // if(marketItems.length !== 0) {
   return (
-    <section className="relative min-h-screen overflow-hidden flex justify-center items-center">
+    <section className="relative mt-20 flex flex-col min-h-screen">
       {/* Scrollbarer Inhalts-Container */}
-      <div className="w-full h-full overflow-auto ">
+      <div className="reusableBlur w-full h-full overflow-auto min-h-screen ">
         <div className="reusableContainer mx-auto flex flex-col items-center">
           <div className="min-w-420px">
             <div className="reusableHeaderBar bg-stone-400 mt-2">
