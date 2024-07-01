@@ -25,7 +25,8 @@
   "contributors": [],
   "scripts": {
     "start": "node --env-file=.env server.js",
-    "dev": "nodemon --env-file=.env server.js"
+    "dev": "nodemon --env-file=.env server.js",
+     "build": "echo 'No build necessary'"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
