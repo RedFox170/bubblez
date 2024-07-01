@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { UserContext } from "../context/userContext.jsx";
-import DropDownProfile from "./DropDownProfile.jsx";
+import DropDownProfile from "./DropDownProfile";
 import "./navbar.css";
 import Logo from "../assets/bubble_icon.png";
 
@@ -13,7 +13,7 @@ const Navbar = () => {
   const menuRef = useRef(null);
 
   const toggleMenu = (event) => {
-    event.stopPropagation();
+    event.stopPropagation(); // Verhindert, dass der Klick weitergeleitet wird
     setMenuVisible(!menuVisible);
   };
 
@@ -34,18 +34,24 @@ const Navbar = () => {
     <nav
       className={`navbar ${
         darkMode ? "dark-mode" : ""
-      } flex justify-between items-center px-4 py-2 fixed top-0 left-0 w-full z-50 bg-opacity-90 backdrop-blur-sm shadow-md`}
+      } flex justify-between items-center px-4 py-2 fixed top-0 left-0 w-full z-50`}
     >
       <div className="logo-and-title flex items-center">
         <Link className="logo-and-title flex items-center" to="./dashboard">
-          <img src={Logo} className="h-10 w-10 mr-2" alt="logo" />
-          <span className="text-xl font-semibold">Bubblez</span>
+          <img src={Logo} className="logo-placeholder mr-2" alt="logo" />
+          <span>Bubblez</span>
         </Link>
       </div>
       <div className="nav-items flex items-center gap-4">
+        <div className="quick-nav hidden md:flex gap-4">
+          <NavLink to="/dashboard">Home</NavLink>
+          <NavLink to="/groups">Gruppen</NavLink>
+          <NavLink to="/market">Marktplatz</NavLink>
+          <NavLink to="/friends">Freunde Finden</NavLink>
+        </div>
         <div
           onClick={toggleDarkMode}
-          className="focus:outline-none darkmode-toggle cursor-pointer"
+          className="focus:outline-none darkmode-toggle"
         >
           {darkMode ? (
             <svg
@@ -54,7 +60,7 @@ const Navbar = () => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-8 h-8 text-yellow-500"
+              className="w-8 h-8"
             >
               <path
                 strokeLinecap="round"
@@ -69,7 +75,7 @@ const Navbar = () => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-7 h-7 text-gray-700"
+              className="w-7 h-7"
             >
               <path
                 strokeLinecap="round"
@@ -79,17 +85,15 @@ const Navbar = () => {
             </svg>
           )}
         </div>
-
         {isLoggedIn && <DropDownProfile />}
-
-        <div className="burger-menu cursor-pointer" onClick={toggleMenu}>
+        <div className="burger-menu" onClick={toggleMenu}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-8 h-8 text-gray-700"
+            className="w-8 h-8"
           >
             <path
               strokeLinecap="round"
@@ -98,50 +102,26 @@ const Navbar = () => {
             />
           </svg>
         </div>
-
         {menuVisible && (
-          <div
-            ref={menuRef}
-            className="dropdown-menu absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 z-50"
-          >
+          <div ref={menuRef} className="dropdown-menu">
             {isLoggedIn ? (
               <>
-                <NavLink
-                  to="/dashboard"
-                  onClick={toggleMenu}
-                  className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <NavLink to="/dashboard" onClick={toggleMenu}>
                   Home
                 </NavLink>
-                <NavLink
-                  to="/groups"
-                  onClick={toggleMenu}
-                  className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <NavLink to="/groups" onClick={toggleMenu}>
                   Gruppen
                 </NavLink>
-                <NavLink
-                  to="/market"
-                  onClick={toggleMenu}
-                  className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <NavLink to="/market" onClick={toggleMenu}>
                   Marktplatz
                 </NavLink>
               </>
             ) : (
               <>
-                <NavLink
-                  to="/register"
-                  onClick={toggleMenu}
-                  className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <NavLink to="/register" onClick={toggleMenu}>
                   Registrieren
                 </NavLink>
-                <NavLink
-                  to="/login"
-                  onClick={toggleMenu}
-                  className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <NavLink to="/login" onClick={toggleMenu}>
                   Log In
                 </NavLink>
               </>

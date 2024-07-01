@@ -111,10 +111,9 @@ const Profile = () => {
   /******************************************************
    *  Return
    ******************************************************/
-
   return (
-    <section className="flex justify-center min-h-screen w-full p-4">
-      <div className="relative w-full max-w-4xl bg-white shadow-md p-6 rounded-lg">
+    <section className="flex mt-20 justify-center min-h-screen w-full p-4">
+      <div className="relative w-full max-w-4xl shadow-md p-6 rounded-lg reusableContainer">
         <div className="col-span-full flex flex-col items-center mb-6">
           <div className="profile-image mb-4">
             <img
@@ -123,58 +122,75 @@ const Profile = () => {
               className="w-[150px] h-[150px] object-cover rounded-full"
             />
           </div>
-          <h3 className="text-2xl font-bold">{userData.userName}</h3>
-          <p className="text-gray-600">{userData.firstName}</p>
+          <h3 className="text-2xl font-bold dark:text-gray-100">
+            {userData.userName}
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            {userData.firstName}
+          </p>
         </div>
-        <div>
-          <button onClick={addFriend}>Adden</button>
-          <button>Nachricht senden</button>
+        <div className="flex justify-center space-x-4 mb-6">
+          <button className="reusableFormBtn" onClick={addFriend}>
+            Adden
+          </button>
+          <button className="reusableFormBtn">Nachricht senden</button>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-1 col-span-full">
-            <h4 className="block text-gray-700 font-bold mb-1">Geburtstag:</h4>
-            <p className="border rounded-md p-2 bg-gray-50">
+            <h4 className="block text-gray-300 dark:text-gray-200 font-bold mb-1">
+              Geburtstag:
+            </h4>
+            <p className="border rounded-md p-2 bg-gray-50 text-gray-800">
               {userData.birthday
                 ? formatDate(userData.birthday)
                 : "Nicht angegeben"}
             </p>
           </div>
           <div className="md:col-span-1 col-span-full">
-            <h4 className="block text-gray-700 font-bold mb-1">Crew:</h4>
-            <p className="border rounded-md p-2 bg-gray-50">
+            <h4 className="block text-gray-300 dark:text-gray-200 font-bold mb-1">
+              Crew:
+            </h4>
+            <p className="border rounded-md p-2 bg-gray-50 text-gray-800">
               {userData.crew || "Nicht angegeben"}
             </p>
           </div>
           <div className="md:col-span-1 col-span-full">
-            <h4 className="block text-gray-700 font-bold mb-1">Stadt:</h4>
-            <p className="border rounded-md p-2 bg-gray-50">
+            <h4 className="block text-gray-300 dark:text-gray-200 font-bold mb-1">
+              Stadt:
+            </h4>
+            <p className="border rounded-md p-2 bg-gray-50 text-gray-800">
               {userData.city || "Nicht angegeben"}
             </p>
           </div>
           <div className="md:col-span-1 col-span-full">
-            <h4 className="block text-gray-700 font-bold mb-1">Interessen:</h4>
-            <p className="border rounded-md p-2 bg-gray-50">
+            <h4 className="block text-gray-300 dark:text-gray-200 font-bold mb-1">
+              Interessen:
+            </h4>
+            <p className="border rounded-md p-2 bg-gray-50 text-gray-800">
               {userData.interests || "Nicht angegeben"}
             </p>
           </div>
           <div className="md:col-span-1 col-span-full">
-            <h4 className="block text-gray-700 font-bold mb-1">
+            <h4 className="block text-gray-300 dark:text-gray-200 font-bold mb-1">
               Familienstand:
             </h4>
-            <p className="border rounded-md p-2 bg-gray-50">
+            <p className="border rounded-md p-2 bg-gray-50 text-gray-800">
               {userData.familyStatus || "Nicht angegeben"}
             </p>
           </div>
           <div className="col-span-full">
-            <h4 className="block text-gray-700 font-bold mb-1">Über mich:</h4>
-            <p className="border rounded-md p-2 bg-gray-50">
+            <h4 className="block text-gray-300 dark:text-gray-200 font-bold mb-1">
+              Über mich:
+            </h4>
+            <p className="border rounded-md p-2 bg-gray-50 text-gray-800">
               {userData.aboutMe || "Nicht angegeben"}
             </p>
           </div>
           <div className="col-span-full">
-            <h4 className="block text-gray-700 font-bold mb-1">Freunde:</h4>
-            <p className="border rounded-md p-2 bg-gray-50">
+            <h4 className="block text-gray-300 dark:text-gray-200 font-bold mb-1">
+              Freunde:
+            </h4>
+            <p className="border rounded-md p-2 bg-gray-50 text-gray-800">
               {userData.followUsers.length > 0
                 ? formatUserList(userData.followUsers)
                 : "Noch keine Freunde geaddet."}

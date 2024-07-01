@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import PostForm from "./PostForm";
 import PostList from "./PostList";
 import apiClient from "../context/apiClient.js";
+import BubbleNavigation from "../mainComponents/BubbleNavigation.jsx";
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -73,8 +74,11 @@ const Dashboard = () => {
     <section className="relative mt-20 flex flex-col min-h-screen">
       <div className="reusableBlur w-full h-full overflow-auto min-h-screen">
         <div className="mx-auto flex flex-col items-center w-full max-w-4xl">
-          <div className="reusableContainer w-full p-4">
+          <div className="reusableContainer w-full mb-2 p-4 ">
             <PostForm setPosts={setPosts} user={userData} />
+          </div>
+          <div className="w-full p-4 h-30 md:h-20 ">
+            <BubbleNavigation />
           </div>
           <PostList posts={posts} />
         </div>
